@@ -109,12 +109,13 @@ chatRoom.on('connection',(client)=>{
 // sockets' functions...
 
   //this is the joining a specific room within the name space
-  client.on('join room one', (name)=>{
+  client.on('join room one', (name, groupNumber)=>{
+    console.log(name.content);
     // adding the client to the room
     client.join('roomOne');
     // chatRoom emits to roomOne clients an event
     // event: new user connected: passes name as a parameter
-    chatRoom.to('roomOne').emit('new user connected one', name);
+    chatRoom.to('roomOne').emit('new user connected one', name,groupNumber);
   })
   //sending a chat message
   client.on("send chat message one",(msg)=>{

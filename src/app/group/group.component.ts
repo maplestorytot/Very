@@ -10,11 +10,11 @@ import { ChatService } from "../chat.service";
 
 export class GroupComponent{
   constructor(public chatServ:ChatService){}
-  onJoinGroupA(){
-    this.chatServ.joinChatRoomOne();
+  onJoinGroupA(groupNumber:number){
+    this.chatServ.joinChatRoomOne(groupNumber);
   }
   onJoinGroupB(){
-    this.chatServ.joinChatRoomTwo();
+    //this.chatServ.joinChatRoomTwo();
 
   }
   onJoinGroupC(){

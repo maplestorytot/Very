@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import * as io from "socket.io-client";
 import { Subject } from "../../node_modules/rxjs";
 import { MessageType } from "./message.model";
+import { ChatGroupType } from "./chatGroup.model";
 // keep here because could make more than 1 service
 @Injectable({
   providedIn: "root"
@@ -16,7 +17,23 @@ export class ChatService  {
   private userId: string;
   private message:MessageType;
 
-  private chatDisplay:boolean[]=[false,false,false];
+  private chatDisplay:ChatGroupType[] = [
+    {
+      joined: false,
+      messages: [],
+      groupNumber: 0
+    },
+    {
+      joined: false,
+      messages: [],
+      groupNumber: 1
+    },
+    {
+      joined: false,
+      messages: [],
+      groupNumber: 2
+    }
+  ];
   private chatBox= new Subject<any>();
   getChatBox(){
     return this.chatBox.asObservable();
@@ -32,35 +49,38 @@ export class ChatService  {
     // console.log(this.userId);
   }
 
-  joinChatRoomOne(){
-    this.chatDisplay[0]=true;
+  joinChatRoomOne(groupNumber:number){
+    this.chatDisplay[groupNumber].joined=true;
     this.chatBox.next([...this.chatDisplay]);
 
     // ,{query:'name=this.userId'}
     // this.chatOneSocket = io.connect("http://localhost:3000/chatRoomOne?name="+this.getUserId());
     // this.chatOneSocket.on('connection',this.userId);
     // the client side client/socket will emit the event join room one passing the name as a parameter
-    this.chatOneSocket.emit('join room one',this.message);
+    this.chatOneSocket.emit('join room one',this.message,groupNumber);
 
   }
 
-  sendMessageOne(newMessage: MessageType) {
-    this.chatOneSocket.emit("send chat message one", newMessage);
+  sendMessageOne(newMessage: MessageType,groupNumber:number) {
+
+    this.chatOneSocket.emit("send chat message one", newMessage,groupNumber);
   }
   receiveMessageOne() {
-    const messagesUpdated = new Subject<any>();
-    this.chatOneSocket.on("receive message one", function(msg) {
+    const messagesUpdated = new Subject<{message:any,chatNumber:number}>();
+    this.chatOneSocket.on("receive message one", (msg:MessageType,groupNumber:number)=> {
       console.log(this.chatOneSocket);
-      messagesUpdated.next(msg);
+      messagesUpdated.next({message:msg,chatNumber:groupNumber});
     });
     return messagesUpdated.asObservable();
   }
 
 
   newUserJoinRoomOne(){
-    const messagesUpdated = new Subject<any>();
-    this.chatOneSocket.on("new user connected one", (name:MessageType)=>{
-      messagesUpdated.next(name);
+    const messagesUpdated = new Subject<{name:any,chatNumber:number}>();
+    this.chatOneSocket.on("new user connected one", (myName:MessageType,groupNumber:number)=>{
+      console.log(myName);
+      console.log(groupNumber);
+      messagesUpdated.next({name:myName,chatNumber:groupNumber});
     })
     return messagesUpdated.asObservable();
 
@@ -77,12 +97,12 @@ export class ChatService  {
 
 
 
- joinChatRoomTwo(){
-    this.chatDisplay[1]=true;
-    this.chatBox.next([...this.chatDisplay]);
-    this.chatOneSocket.emit('join room two',this.message);
+//  joinChatRoomTwo(){
+//     this.chatDisplay[1]=true;
+//     this.chatBox.next([...this.chatDisplay]);
+//     this.chatOneSocket.emit('join room two',this.message);
 
-  }
+//   }
 
   sendMessageTwo(newMessage: MessageType) {
     this.chatOneSocket.emit("send chat message two", newMessage);

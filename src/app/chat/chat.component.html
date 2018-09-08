@@ -1,14 +1,14 @@
-<body  *ngFor='let chats of chatDisplay'>
-<form *ngIf='putInUser==false' (submit)='onLoginUser(loginForm)' #loginForm='ngForm'>
+<body>
+  <form *ngIf='putInUser==false' (submit)='onLoginUser(loginForm)' #loginForm='ngForm'>
     <input type="text" placeholder="What is your name? " name="username" ngModel #username="ngModel" required minlength="3">
-  <button  *ngIf='putInUser==false' type='submit'>login</button>
-</form>
+    <button *ngIf='putInUser==false' type='submit'>login</button>
+  </form>
+  <div *ngFor='let chats of chatGroups'>
+    <form *ngIf='putInUser==true&& chats.joined===true' (submit)="onSendMessage(socketForm,chats.groupNumber)" #socketForm='ngForm'>
 
-  <form  *ngIf='putInUser==true&& chats==true' (submit)="onSendMessage(socketForm)" #socketForm='ngForm'>
 
-    <div>
       <div class="scrolling-wrapper">
-        <ul *ngFor="let messages of currentMsgNotif">
+        <ul *ngFor="let messages of chats.messages">
           <li class='card'>
             <mat-card *ngIf='messages.creator' class='creator'>
               {{messages.creator}}
@@ -24,9 +24,9 @@
 
       <textarea matInput cols="30" rows="2" name="typein" ngModel #typein="ngModel" required></textarea>
 
-    <br>
-    <button type="submit">submit</button>
-  </div>
-  </form>
+      <br>
+      <button type="submit">submit</button>
 
+  </form>
+</div>
 </body>
