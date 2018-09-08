@@ -1,0 +1,32 @@
+<body  *ngFor='let chats of chatDisplay'>
+<form *ngIf='putInUser==false' (submit)='onLoginUser(loginForm)' #loginForm='ngForm'>
+    <input type="text" placeholder="What is your name? " name="username" ngModel #username="ngModel" required minlength="3">
+  <button  *ngIf='putInUser==false' type='submit'>login</button>
+</form>
+
+  <form  *ngIf='putInUser==true&& chats==true' (submit)="onSendMessage(socketForm)" #socketForm='ngForm'>
+
+    <div>
+      <div class="scrolling-wrapper">
+        <ul *ngFor="let messages of currentMsgNotif">
+          <li class='card'>
+            <mat-card *ngIf='messages.creator' class='creator'>
+              {{messages.creator}}
+
+            </mat-card>
+            <mat-card class='content'>
+              {{messages.content}}
+
+            </mat-card>
+          </li>
+        </ul>
+      </div>
+
+      <textarea matInput cols="30" rows="2" name="typein" ngModel #typein="ngModel" required></textarea>
+
+    <br>
+    <button type="submit">submit</button>
+  </div>
+  </form>
+
+</body>

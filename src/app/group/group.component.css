@@ -1,0 +1,27 @@
+img{
+  width:30%;
+  height:30%;
+}
+mat-card{
+  width:30%;
+
+}
+.divider{
+
+  flex: 1 1 auto;
+
+}
+ul{
+  width:50%;
+  margin:auto 0;
+  align-content: center;
+  display: flex;
+  list-style: none;
+}
+button{
+  width:50%;
+  text-align: left;
+}
+li{
+
+}

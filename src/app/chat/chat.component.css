@@ -1,0 +1,32 @@
+body{
+  width:30%;
+  height:30%;
+  background-color: aqua;
+
+}
+
+
+ul{
+  width:50%;
+  margin:auto 0;
+  align-content: center;
+  display: flex;
+  list-style: none;
+}
+.scrolling-wrapper {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  white-space: nowrap;
+}
+.card {
+    display: inline-block;
+  }
+
+.creator{
+    width:20%;
+    font-size:100%;
+}
+.content{
+  width:50%;
+
+}
