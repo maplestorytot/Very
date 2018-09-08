@@ -53,7 +53,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       .subscribe(newNotif => {
         this.chatGroups[newNotif.chatNumber].messages.push(newNotif.name);
       });
-
+      // this is updating the display connected to the component.html because there has been a change to the
+      // chat boxes joined
     this.chatNumberSub = this.chatService.getChatBox().subscribe(chatNumber => {
       this.chatGroups = chatNumber;
 

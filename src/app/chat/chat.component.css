@@ -30,3 +30,12 @@ ul{
   width:50%;
 
 }
+.divider{
+
+  flex: 1 1 auto;
+
+}
+mat-accordion{
+  display:flex;
+
+}

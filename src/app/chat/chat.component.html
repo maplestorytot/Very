@@ -3,30 +3,40 @@
     <input type="text" placeholder="What is your name? " name="username" ngModel #username="ngModel" required minlength="3">
     <button *ngIf='putInUser==false' type='submit'>login</button>
   </form>
-  <div *ngFor='let chats of chatGroups'>
-    <form *ngIf='putInUser==true&& chats.joined===true' (submit)="onSendMessage(socketForm,chats.groupNumber)" #socketForm='ngForm'>
+  <mat-accordion multi="true" >
+    <mat-expansion-panel *ngFor='let chats of chatGroups'>
+      <mat-expansion-panel-header *ngIf='putInUser==true&& chats.joined===true'>
+        {{chats.groupNumber}}
+      </mat-expansion-panel-header>
+
+      <form *ngIf='putInUser==true&& chats.joined===true' (submit)="onSendMessage(socketForm,chats.groupNumber)" #socketForm='ngForm'>
 
 
-      <div class="scrolling-wrapper">
-        <ul *ngFor="let messages of chats.messages">
-          <li class='card'>
-            <mat-card *ngIf='messages.creator' class='creator'>
-              {{messages.creator}}
+        <div class="scrolling-wrapper">
+          <ul *ngFor="let messages of chats.messages">
+            <li class='card'>
+              <mat-card *ngIf='messages.creator' class='creator'>
+                {{messages.creator}}
 
-            </mat-card>
-            <mat-card class='content'>
-              {{messages.content}}
+              </mat-card>
+              <mat-card class='content'>
+                {{messages.content}}
 
-            </mat-card>
-          </li>
-        </ul>
-      </div>
+              </mat-card>
+            </li>
+          </ul>
+        </div>
 
-      <textarea matInput cols="30" rows="2" name="typein" ngModel #typein="ngModel" required></textarea>
+        <textarea matInput cols="30" rows="2" name="typein" ngModel #typein="ngModel" required></textarea>
 
-      <br>
-      <button type="submit">submit</button>
+        <br>
+        <button type="submit">submit</button>
 
-  </form>
-</div>
+      </form>
+      <span class='divider'></span>
+
+    </mat-expansion-panel>
+
+  </mat-accordion>
+
 </body>

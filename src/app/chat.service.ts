@@ -9,7 +9,7 @@ import { ChatGroupType } from "./chatGroup.model";
 })
 export class ChatService  {
 
-  // connecitng to the name space
+  // connecitng to the name space, not essential
   private chatOneSocket=io.connect('http://localhost:3000/chatRoom');
 
   // creating a subscription for the messages
@@ -50,15 +50,12 @@ export class ChatService  {
   }
 
   joinChatRoomOne(groupNumber:number){
+    // this changes the display information so that the chat room's joined value is true, allowing it be displayed
     this.chatDisplay[groupNumber].joined=true;
+    // this emits a subject/data that is taken within chat component.ts, where it updates it there
     this.chatBox.next([...this.chatDisplay]);
-
-    // ,{query:'name=this.userId'}
-    // this.chatOneSocket = io.connect("http://localhost:3000/chatRoomOne?name="+this.getUserId());
-    // this.chatOneSocket.on('connection',this.userId);
-    // the client side client/socket will emit the event join room one passing the name as a parameter
+    // the socket now calls the join room one function within server.js that allows you to join the room
     this.chatOneSocket.emit('join room one',this.message,groupNumber);
-
   }
 
   sendMessageOne(newMessage: MessageType,groupNumber:number) {
@@ -78,8 +75,7 @@ export class ChatService  {
   newUserJoinRoomOne(){
     const messagesUpdated = new Subject<{name:any,chatNumber:number}>();
     this.chatOneSocket.on("new user connected one", (myName:MessageType,groupNumber:number)=>{
-      console.log(myName);
-      console.log(groupNumber);
+
       messagesUpdated.next({name:myName,chatNumber:groupNumber});
     })
     return messagesUpdated.asObservable();

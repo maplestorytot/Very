@@ -13,11 +13,12 @@ export class GroupComponent{
   onJoinGroupA(groupNumber:number){
     this.chatServ.joinChatRoomOne(groupNumber);
   }
-  onJoinGroupB(){
-    //this.chatServ.joinChatRoomTwo();
+  onJoinGroupB(groupNumber:number){
+    this.chatServ.joinChatRoomOne(groupNumber);
 
   }
-  onJoinGroupC(){
+  onJoinGroupC(groupNumber:number){
+    this.chatServ.joinChatRoomOne(groupNumber);
 
   }
 }
