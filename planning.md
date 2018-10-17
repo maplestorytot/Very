@@ -19,7 +19,15 @@ Type within in to chat
   -messages possibly contain which group chat
 
 
-
+Extra Features:
+-isTyping
+-timeStamp
+-1-1 chats
+-user accounts
+-user profiles
+-posts
+-tokens to enter group chats? group chat membership
+-can only join a chat room once
 
 
 
@@ -37,11 +45,14 @@ Login with username/password
 
 Group Chat:
 Login with username
+  system will authorize with a token
 
-Join a group chat:
+Join a group chat with a password
+  system will authorize with a token
 
 Group chat box pops up
-
+  you will join the socket
+  
 Type within in to chat
 
 

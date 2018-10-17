@@ -10,7 +10,8 @@ import { ChatGroupType } from "./chatGroup.model";
 export class ChatService  {
 
   // connecitng to the name space, not essential
-  private chatOneSocket=io.connect('http://localhost:3000/chatRoom');
+  private chatOneSocket=io.connect('http://localhost:3000/');
+
 
   // creating a subscription for the messages
   // private socket = io("http://localhost:3000");
@@ -38,6 +39,7 @@ export class ChatService  {
   getChatBox(){
     return this.chatBox.asObservable();
   }
+
   // could create another user model   passed back from data base that contain namme last name etc...
   getUserId() {
     return this.userId;

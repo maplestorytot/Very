@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { GroupComponent } from './group/group.component';
 import {
   MatInputModule,
    MatCardModule,
@@ -15,19 +14,25 @@ import {
    MatFormFieldModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ChatComponent } from './chat/chat.component';
 import { FormsModule } from '../../node_modules/@angular/forms';
-import { LoginComponent } from './login/login.component';
+import { AppRoutingModule } from './app-routing.module';
+import { ChatComponent } from './chat/chat.component';
+import { LoginComponent } from './auth/login/login.component';
+import{SignupComponent} from'./auth/signup/signup.component';
+import { GroupComponent } from './group/group.component';
+import { HttpClientModule } from '../../node_modules/@angular/common/http';
 
 @NgModule({
   declarations: [
     AppComponent,
-    GroupComponent,
     ChatComponent,
-    LoginComponent
+    LoginComponent,
+    SignupComponent,
+    GroupComponent
   ],
   imports: [
     BrowserModule,
+    AppRoutingModule,
     MatInputModule,
     MatCardModule,
     MatButtonModule,
@@ -38,7 +43,8 @@ import { LoginComponent } from './login/login.component';
     MatDialogModule,
     MatFormFieldModule,
     BrowserAnimationsModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
 
   ],
   providers: [],

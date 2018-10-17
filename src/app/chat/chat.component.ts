@@ -82,11 +82,24 @@ export class ChatComponent implements OnInit, OnDestroy {
       creator: this.username
     };
       this.chatService.sendMessageOne(message,group);
+      form.setValue({typein:""});
   }
 
+  onJoinGroupA(groupNumber:number){
+    this.chatService.joinChatRoomOne(groupNumber);
+  }
+  onJoinGroupB(groupNumber:number){
+    this.chatService.joinChatRoomOne(groupNumber);
+
+  }
+  onJoinGroupC(groupNumber:number){
+    this.chatService.joinChatRoomOne(groupNumber);
+
+  }
   ngOnDestroy() {
     this.messagesSub.unsubscribe();
     this.notificationSub.unsubscribe();
     this.chatNumberSub.unsubscribe();
   }
+
 }

@@ -1,2 +1,6 @@
-<group-component></group-component>
-<app-chat></app-chat>
+<main>
+    <!--Tells where routes can be rendered-->
+    <router-outlet></router-outlet>
+    <router-outlet name="group"></router-outlet>
+    <router-outlet name="chat"></router-outlet>
+</main>

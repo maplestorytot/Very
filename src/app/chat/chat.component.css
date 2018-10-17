@@ -1,33 +1,50 @@
+
 body{
-  width:30%;
-  height:30%;
-  background-color: aqua;
-
+  position: fixed;
+  right:0;
+  width: 100% ;
 }
-
-
-ul{
-  width:50%;
+ul.chats{
   margin:auto 0;
   align-content: center;
   display: flex;
   list-style: none;
+  width:100%;
+}
+ul{
+  display: flex;
+  list-style: none;
+}
+#chatBox{
+  width:30%;
+  display: inline-block;
+  right:0;
+  bottom:0;
 }
 .scrolling-wrapper {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   white-space: nowrap;
+  height:10rem;
 }
-.card {
-    display: inline-block;
-  }
 
-.creator{
-    width:20%;
-    font-size:100%;
+.divider{
+
+  flex: 1 1 auto;
+
 }
-.content{
-  width:50%;
+
+.messagesBox{
+
+
+}
+
+img{
+  width:30%;
+  height:30%;
+}
+mat-card{
+  width:30%;
 
 }
 .divider{
@@ -35,7 +52,7 @@ ul{
   flex: 1 1 auto;
 
 }
-mat-accordion{
-  display:flex;
-
+button{
+  width:50%;
+  text-align: left;
 }

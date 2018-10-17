@@ -1,10 +1,23 @@
 const express = require("express");
+const router = express.Router();
 const path = require("path");
+const bodyParser=require('body-parser');
+
 const app = express();
 const mongoose = require("mongoose");
 const socket = require("socket.io");
 const debug = require("debug")("node-angular");
 const http = require("http");
+const bycrpt = require("bcryptjs"); //npm install --save bcryptjs
+
+//socket io auth
+const socketAuth=require('socketio-auth');
+
+//MODELS
+const User=require('./models/user.model');
+const Group=require('./models/group.model');
+const ChatMessage=require('./models/myMessage.model');
+const SingleChat=require('./models/singleChat.model');
 
 // ryanchang
 //yKoO03VrsDCfB1Ym
@@ -91,83 +104,151 @@ app.use((req, res, next) => {
   );
 
   //always should have options to check if post request is valid...
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,POST,DELETE,PATCH,OPTIONS,PUT"
-  );
+  res.setHeader('Access-Control-Allow-Methods','GET,POST,DELETE,PATCH,OPTIONS,PUT');
+
   res.append("Access-Control-Allow-Credentials", true);
 
   next();
 });
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}));
+
+app.use('/api/user',router.post("/signup",(req,res,next)=>{
+  console.log(req.body.username);
+  //this is encrypting our password from the request
+ //the second is salt0r ground which higher number means longer but more safer
+ //the result of then is the hash encrypted...
+bycrpt.hash(req.body.password,10).then(hash=>{
+ const user =new User({
+   firstName:req.body.firstName,
+   lastName:req.body.lastName,
+   nickName:req.body.nickName,
+   username:req.body.username,
+   password:hash
+ });
+ //saving the user into the database
+ user.save().then(result=>{
+   res.status(201).json({
+     message:"user created",
+     result:result
+ });
+ console.log("new user created: " + user)
+ }).catch(err=>{
+   res.status(500).json({message:'Invalid Authentification credentials!'});
+ })
+
+})
+}))
+
+
 // creating a socket io here, it is a server type
 const io = socket.listen(server);
 
+// io.on("connection", function(socket){
+//   console.log(socket.id+ " joined");
+//   socket.on("authentication", authenticate);
+// });
+
+
+
+
+function authenticate(socket, data,callback){
+  var username=data.username;
+  var password=data.password;
+  console.log(username + password)
+
+  User.findOne({username:username}).then(user=>{
+    //check if the user exists
+    if (!user){
+      console.log("user not found")
+      return callback(new Error ("User not found"));
+    }
+    const validAuth=bycrpt.compare(password,user.password)
+    console.log(validAuth.then());
+    // if password is correct, i want to note to server by console log
+    if(validAuth){
+      console.log('Authentification Valid')
+    }
+    else{
+      console.log('Authentification Fail')
+    }
+   // returns true or false checking if the user's password is correct
+    return callback(null,bycrpt.compare(password,user.password));
+  }
+  //catch any errors
+  ).catch(err=>{
+    console.log("Fail Authentificaiton")
+    return callback(new Error("Invalid Authentification Credentials"))
+  })
+}
+
+//what is avaliable after authentification functions for the users
+function postAuthenticate(socket, data){
+  var username = data.username;
+  User.findOne({username:username}).then(user=>{
+    socket.client.user=user;
+    console.log(user)
+
+
 // creating a name space here, it is like sub server type
 // like localhost/chatRoom
-// so that only in this url will things be performed
-var chatRoom = io.of("/chatRoom");
-// when the name space sub server is connected by a client...
-// clients are a socket
-chatRoom.on("connection", client => {
-  // sockets' functions...
-
+// // so that only in this url will things be performed
+// var chatRoom = io.of("/chatRoom");
+// // when the name space sub server is connected by a client...
+// // clients are a socket
+// chatRoom.on("connection", client => {
+//   // sockets' functions...
   //this is the joining a specific room within the name space
-  client.on("join room one", (name, groupNumber) => {
-    console.log(name.content);
+  socket.on("join room one", (name, groupNumber) => {
     // adding the client to the room
-    client.join("room" + groupNumber);
+    socket.join("room" + groupNumber);
     // chatRoom emits to roomOne clients an event
     // event: new user connected: passes name as a parameter
     chatRoom.to("room" + groupNumber).emit("new user connected one", name, groupNumber);
   });
   //sending a chat message
-  client.on("send chat message one",( msg,groupNumber) => {
+  socket.on("send chat message one",( msg,groupNumber) => {
     //add to db message
+
+
     //sends meesage to all those connected to roomOne
     chatRoom.to("room" + groupNumber).emit("receive message one", msg, groupNumber);
   });
 
 
-  client.on("disconnect", function() {
-    console.log("user disconnected");
-  });
-});
-
-/*
-chatRoom.on("connection", client => {
-  // sockets' functions...
-
-  //this is the joining a specific room within the name space
-  client.on("join room one", (name, groupNumber) => {
-    console.log(name.content);
-    // adding the client to the room
-    client.join("roomOne");
-    // chatRoom emits to roomOne clients an event
-    // event: new user connected: passes name as a parameter
-    chatRoom.to("roomOne").emit("new user connected one", name, groupNumber);
-  });
-  //sending a chat message
-  client.on("send chat message one", msg => {
-    //add to db message
-    //sends meesage to all those connected to roomOne
-    chatRoom.to("roomOne").emit("receive message one", msg);
-  });
-
-  //chat room 2
-  client.on("join room two", name => {
-    client.join("roomTwo");
-
-    chatRoom.to("roomTwo").emit("new user connected", name);
-  });
-  client.on("send chat message two", msg => {
-    chatRoom.to("roomTwo").emit("receive message two", msg);
-  });
-
-  client.on("disconnect", function() {
+  socket.on("disconnect", function() {
     console.log("user disconnected");
   });
 });
 
 
-*/
+
+  // }
+  // )
+}
+
+function disconnect(socket){
+  console.log('hi you}')
+  console.log(socket.id+' disconnected')
+}
+
+socketAuth(io,{
+  authenticate:authenticate,
+  postAuthenticate:postAuthenticate,
+  disconnect:disconnect,
+  timeout:10000
+})
+
+
+
+
+
+
+
+
+
+
+
+
+

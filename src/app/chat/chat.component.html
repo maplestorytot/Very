@@ -1,42 +1,78 @@
+
+
 <body>
   <form *ngIf='putInUser==false' (submit)='onLoginUser(loginForm)' #loginForm='ngForm'>
     <input type="text" placeholder="What is your name? " name="username" ngModel #username="ngModel" required minlength="3">
     <button *ngIf='putInUser==false' type='submit'>login</button>
   </form>
-  <mat-accordion multi="true" >
-    <mat-expansion-panel *ngFor='let chats of chatGroups'>
-      <mat-expansion-panel-header *ngIf='putInUser==true&& chats.joined===true'>
-        {{chats.groupNumber}}
-      </mat-expansion-panel-header>
 
-      <form *ngIf='putInUser==true&& chats.joined===true' (submit)="onSendMessage(socketForm,chats.groupNumber)" #socketForm='ngForm'>
+<!--
+<h2>Groups!</h2>
 
 
-        <div class="scrolling-wrapper">
-          <ul *ngFor="let messages of chats.messages">
-            <li class='card'>
-              <mat-card *ngIf='messages.creator' class='creator'>
-                {{messages.creator}}
+<ul>
 
-              </mat-card>
-              <mat-card class='content'>
-                {{messages.content}}
+  <li>
+    <mat-card>
+      <img src="https://lolstatic-a.akamaihd.net/frontpage/apps/prod/LolGameInfo-Harbinger/en_US/8588e206d560a23f4d6dd0faab1663e13e84e21d/assets/assets/images/gi-landing-top.jpg"
+        alt="group A">
+      <br>
+      <button mat-stroked-button (click)='onJoinGroupA(0)'>Join Group A</button>
 
-              </mat-card>
-            </li>
-          </ul>
-        </div>
+    </mat-card>
+  </li>
+  <span class='divider'></span>
+  <li>
+    <mat-card>
+      <img src="http://speeli.com/question/2218/2016-07-08_812maplestory-win-cover-front-76248.jpg" alt="group A">
+      <br>
+      <button mat-stroked-button (click)='onJoinGroupB(1)'>Join Group B</button>
 
+    </mat-card>
+  </li>
+  <span class='divider'></span>
+
+  <li>
+    <mat-card>
+      <img src="https://lolstatic-a.akamaihd.net/frontpage/apps/prod/LolGameInfo-Harbinger/en_US/8588e206d560a23f4d6dd0faab1663e13e84e21d/assets/assets/images/gi-landing-top.jpg"
+        alt="group A">
+      <br>
+      <button mat-stroked-button (click)='onJoinGroupC(2)'>Join Group C</button>
+
+    </mat-card>
+  </li>
+</ul>
+-->
+
+<div id="chatBox" *ngFor='let chats of chatGroups'>
+  <p *ngIf='putInUser==true&& chats.joined===true'>{{chats.groupNumber}}</p>
+
+  <form *ngIf='putInUser==true&& chats.joined===true' (submit)="onSendMessage(socketForm,chats.groupNumber)" #socketForm='ngForm'>
+    <div class='messagesBox'>
+      <div class="scrolling-wrapper">
+
+        <ul class="chats" *ngFor="let messages of chats.messages">
+          <li class='card'>
+            <mat-card id='creator' *ngIf='messages.creator'>
+              {{messages.creator}}
+
+            </mat-card>
+            <mat-card class='content'>
+              {{messages.content}}
+
+            </mat-card>
+          </li>
+        </ul>
         <textarea matInput cols="30" rows="2" name="typein" ngModel #typein="ngModel" required></textarea>
 
         <br>
         <button type="submit">submit</button>
+        </div>
+        </div>
+  </form>
+<span class='divider'> </span>
 
-      </form>
-      <span class='divider'></span>
 
-    </mat-expansion-panel>
 
-  </mat-accordion>
-
+</div>
 </body>
