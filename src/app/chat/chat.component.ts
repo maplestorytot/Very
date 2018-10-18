@@ -4,6 +4,7 @@ import { NgForm } from "../../../node_modules/@angular/forms";
 import { Subscription } from "../../../node_modules/rxjs";
 import { MessageType } from "../message.model";
 import { ChatGroupType } from "../chatGroup.model";
+import { MainService } from "../main.service";
 
 @Component({
   selector: "app-chat",
@@ -40,25 +41,27 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   // currentMessages:MessageType[]=[];
   // injecting the authentification service
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService,private mainService:MainService) {}
   // put the receive messages in here so that it doesn't create more than one instance of the messages
   ngOnInit() {
-    this.messagesSub = this.chatService
+    this.messagesSub = this.mainService
       .receiveMessageOne()
       .subscribe(newMsg => {
         this.chatGroups[newMsg.chatNumber].messages.push(newMsg.message);
       });
-    this.notificationSub = this.chatService
+    this.notificationSub = this.mainService
       .newUserJoinRoomOne()
       .subscribe(newNotif => {
         this.chatGroups[newNotif.chatNumber].messages.push(newNotif.name);
       });
       // this is updating the display connected to the component.html because there has been a change to the
       // chat boxes joined
-    this.chatNumberSub = this.chatService.getChatBox().subscribe(chatNumber => {
+    this.chatNumberSub = this.mainService.getNumberOfGroupChatOpen().subscribe(chatNumber => {
       this.chatGroups = chatNumber;
-
+      console.log('dsafsadf');
+      console.log(this.chatGroups);
     });
+
   }
   onLoginUser(form: NgForm) {
     if (form.invalid) {
@@ -70,7 +73,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       creator: null,
       content: this.username + " has joined the chat room!"
     };
-    this.chatService.login(notification);
+    this.mainService.login(notification);
   }
 
   onSendMessage(form: NgForm, group: number) {
@@ -81,21 +84,21 @@ export class ChatComponent implements OnInit, OnDestroy {
       content: form.value.typein,
       creator: this.username
     };
-      this.chatService.sendMessageOne(message,group);
+      this.mainService.sendMessageOne(message,group);
       form.setValue({typein:""});
   }
 
-  onJoinGroupA(groupNumber:number){
-    this.chatService.joinChatRoomOne(groupNumber);
-  }
-  onJoinGroupB(groupNumber:number){
-    this.chatService.joinChatRoomOne(groupNumber);
+  // onJoinGroupA(groupNumber:number){
+  //   this.chatService.joinChatRoomOne(groupNumber);
+  // }
+  // onJoinGroupB(groupNumber:number){
+  //   this.chatService.joinChatRoomOne(groupNumber);
 
-  }
-  onJoinGroupC(groupNumber:number){
-    this.chatService.joinChatRoomOne(groupNumber);
+  // }
+  // onJoinGroupC(groupNumber:number){
+  //   this.chatService.joinChatRoomOne(groupNumber);
 
-  }
+  // }
   ngOnDestroy() {
     this.messagesSub.unsubscribe();
     this.notificationSub.unsubscribe();

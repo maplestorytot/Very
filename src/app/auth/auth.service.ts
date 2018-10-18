@@ -6,6 +6,7 @@ import * as io from "socket.io-client";
 import { SignUpModel } from "./auth.model";
 import { HttpClient } from "../../../node_modules/@angular/common/http";
 import { Subject } from "../../../node_modules/rxjs";
+import { MessageType } from "../message.model";
 
 // keep here because could make more than 1 service
 @Injectable({
@@ -13,9 +14,13 @@ import { Subject } from "../../../node_modules/rxjs";
 })
 export class AuthService  {
   private chatOneSocket:io;
+
   private chatSocket=new Subject<io>();
   getChatSocket(){
     return this.chatSocket.asObservable();
+  }
+  getChatSocketIo(){
+    return this.chatOneSocket;
   }
   // private authStatusListener = new Subject<boolean>();
   // getAuthStatusListener() {
@@ -25,11 +30,17 @@ export class AuthService  {
   constructor(private http: HttpClient, private router: Router) {}
 
   onLogin(username: string, password: string) {
-    this.chatOneSocket=io.connect('http://localhost:3000');
+    this.chatOneSocket=io.connect('http://localhost:3000/');
 
       console.log(username + password)
       console.log({username:username,password:password});
       this.chatOneSocket.emit('authentication',{username:username,password:password});
+
+      this.chatOneSocket.on('new user connected one',(myName:MessageType,groupNumber:number)=>{
+        console.log(myName.creator);
+    });
+      this.chatSocket.next(this.chatOneSocket);
+
 
   }
 

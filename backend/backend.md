@@ -101,3 +101,10 @@ Server.js NOTES:
 
 2) using socketauth for authentification
   -checks on the database username if they exist and if the password is correct
+
+
+
+Front End: 
+
+main.service.ts
+  -does authentication there... sends

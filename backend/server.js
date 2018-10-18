@@ -165,16 +165,20 @@ function authenticate(socket, data,callback){
       return callback(new Error ("User not found"));
     }
     const validAuth=bycrpt.compare(password,user.password)
-    console.log(validAuth.then());
-    // if password is correct, i want to note to server by console log
-    if(validAuth){
+    bycrpt.compare(password,user.password,function(err,res){
+        // if password is correct, i want to note to server by console log
+    if(res){
       console.log('Authentification Valid')
+      return callback(null,bycrpt.compare(password,user.password));
+
     }
     else{
       console.log('Authentification Fail')
     }
+    });
+
    // returns true or false checking if the user's password is correct
-    return callback(null,bycrpt.compare(password,user.password));
+    // return callback(null,bycrpt.compare(password,user.password));
   }
   //catch any errors
   ).catch(err=>{
@@ -194,23 +198,27 @@ function postAuthenticate(socket, data){
 // creating a name space here, it is like sub server type
 // like localhost/chatRoom
 // // so that only in this url will things be performed
+var chatRoom = io.of("/");
 // var chatRoom = io.of("/chatRoom");
+
+
 // // when the name space sub server is connected by a client...
 // // clients are a socket
 // chatRoom.on("connection", client => {
 //   // sockets' functions...
   //this is the joining a specific room within the name space
   socket.on("join room one", (name, groupNumber) => {
+    console.log('Authorized user joined room '   + groupNumber)
+    // socket.emit('new user connected one', name,groupNumber)
     // adding the client to the room
     socket.join("room" + groupNumber);
-    // chatRoom emits to roomOne clients an event
-    // event: new user connected: passes name as a parameter
+    // // chatRoom emits to roomOne clients an event
+    // // event: new user connected: passes name as a parameter
     chatRoom.to("room" + groupNumber).emit("new user connected one", name, groupNumber);
   });
   //sending a chat message
   socket.on("send chat message one",( msg,groupNumber) => {
     //add to db message
-
 
     //sends meesage to all those connected to roomOne
     chatRoom.to("room" + groupNumber).emit("receive message one", msg, groupNumber);
@@ -229,7 +237,6 @@ function postAuthenticate(socket, data){
 }
 
 function disconnect(socket){
-  console.log('hi you}')
   console.log(socket.id+' disconnected')
 }
 
@@ -252,3 +259,28 @@ socketAuth(io,{
 
 
 
+// var chatRoom = io.of("/");
+// // var chatRoom = io.of("/chatRoom");
+
+
+// // // when the name space sub server is connected by a client...
+// // // clients are a socket
+// // chatRoom.on("connection", client => {
+// //   // sockets' functions...
+//   //this is the joining a specific room within the name space
+//   socket.on("join room one", (name, groupNumber) => {
+//     console.log('Authorized user joined room '   + groupNumber)
+//     // adding the client to the room
+//     socket.join("room" + groupNumber);
+//     // chatRoom emits to roomOne clients an event
+//     // event: new user connected: passes name as a parameter
+//     chatRoom.to("room" + groupNumber).emit("new user connected one", name, groupNumber);
+//   });
+//   //sending a chat message
+//   socket.on("send chat message one",( msg,groupNumber) => {
+//     //add to db message
+
+
+//     //sends meesage to all those connected to roomOne
+//     chatRoom.to("room" + groupNumber).emit("receive message one", msg, groupNumber);
+//   });
