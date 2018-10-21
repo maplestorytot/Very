@@ -1,27 +1,24 @@
 # Veery
+A chat app that makes use of socket.io for real time messaging. 
+This project is comprised of MongoDb, Express.js, AngularJS, and Node.js (MEAN stack). 
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.1.5.
 
 ## Development server
+To run the app:
+Open a terminal and run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Open another terminal and run nodemon ./backend/server.js. 
 
-## Code scaffolding
+Afterwards, you may create an account, login, and begin chatting with others users. You can do this by opening two tabs at `http://localhost:4200/`and login into two accounts. 
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Features
+Finished:
 
-## Build
+-User Authentication using socket.io auth
+-instant messaging in group chats using socket.io
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+To do:
+-implement file/image uploading
+-improve front end aesthetics
+-create one to one chats
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
