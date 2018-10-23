@@ -5,7 +5,8 @@ const userSchema = mongoose.Schema({
     lastName:{type:String, required:true},
     nickName:{type:String, required:true},
     username:{type:String, required:true},
-    password:{type:String, required:true}
+    password:{type:String, required:true},
+    chatOpened:[{type:mongoose.Schema.Types.ObjectId, required: true,ref:'SingleChat' }]
 
 });
 

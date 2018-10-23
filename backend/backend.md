@@ -108,3 +108,30 @@ Front End:
 
 main.service.ts
   -does authentication there... sends
+
+
+
+
+
+
+
+
+
+
+
+Goals:
+Displaying all users
+  client logs on
+  gets list of all users displayed as a list
+  clicking on a user will send a request to server
+    -check user is actually authenticated
+    -check if chat Group exists between two users
+      -if yes: fetch the chat's top ten messages
+      -if no: create a chat Group between the two users
+    -now open to sending messages between the users 
+      -sending a message adds it first to the database and then emits it to any sockets currently connected
+    -if receiving a message: chat  box should pop up 
+
+creating group chats
+
+

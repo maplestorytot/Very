@@ -4,7 +4,7 @@ import { Injectable } from "@angular/core";
 import * as io from "socket.io-client";
 import { ChatGroupType } from "./chatGroup.model";
 import { MessageType } from "./message.model";
-import { SignUpModel } from "./auth/auth.model";
+import {  User } from "./auth/auth.model";
 import { HttpClient } from "../../node_modules/@angular/common/http";
 import { Router } from "../../node_modules/@angular/router";
 import { Subject } from "../../node_modules/rxjs";
@@ -14,39 +14,68 @@ import { Subject } from "../../node_modules/rxjs";
   providedIn: "root"
 })
 export class MainService  {
+
+
   private chatOneSocket=io.connect('http://localhost:3000/');
 
-
+  // if client is authenticated: to know if should display things
+  private isAuthenticated=false;
+  // used when opening chats will send the user id
+  private userId: string;
+  private allOfUsers:User[];
   // private authStatusListener = new Subject<boolean>();
   // getAuthStatusListener() {
   //   return this.authStatusListener.asObservable();
   // }
 
   constructor(private http: HttpClient, private router: Router) {}
+  // the subject to send out the list of users to user list component
+  private allOfTheUsersListener= new Subject<any>();
+  private authenticatedListener= new Subject<any>();
 
+  // the get for the list of user subject
+  getAllOfTheUsersListener(){
+    return this.allOfTheUsersListener.asObservable();
+  }
+  // if client is authenticated: to know if should display things
+  getAuthenticatedListener(){
+    return this.authenticatedListener.asObservable();
+  }
+  getIsAuth(){
+    return this.isAuthenticated;
+  }
+  getUserId() {
+    return this.userId;
+  }
+  // on login will take in the username and password
   onLogin(username: string, password: string) {
+    this.router.navigate(["/group"]);
+
+    // create a user to send to the database for verification
+    const user:User={
+      _id:null,
+      firstName:null,
+      lastName:null,
+      nickName:null,
+      username:username,
+      password:password
+    }
+      // use socket io auth authentication method
+      this.chatOneSocket.emit('authentication',user);
+      // immediately afterwards, this get method for all the users
+      this.chatOneSocket.on("get all users", (currentUser, allUsers: User[]) => {
+        this.userId = currentUser._id;
+        // list of user logic
+       this.allOfUsers=allUsers;
+       // emit all of the users using the subject listener
+      this.allOfTheUsersListener.next([...this.allOfUsers]);
 
 
-      console.log(username + password)
-      this.chatOneSocket.emit('authentication',{username:username,password:password});
-
-    //   this.chatOneSocket.on('new user connected one',(myName:MessageType,groupNumber:number)=>{
-
-    // });
-
-    // this.chatOneSocket.emit('join room one',this.joinChatRoomOne.groupNumber);
-
-    // this.chatOneSocket.emit("send chat message one", this.sendMessageOne.newMessage,this.sendMessageOne.groupNumber);
-
-    //   //recieving messages
-    // this.chatOneSocket.on("receive message one", (msg:MessageType,groupNumber:number)=> {
-    //   this.receiveMessageOne(msg,groupNumber);
-    // });
-
-
-    // this.chatOneSocket.on("new user connected one", (myName:MessageType,groupNumber:number)=>{
-    //   this.newUserJoinRoomOne(myName,groupNumber);
-    // })
+      //authenticated logic
+      this.isAuthenticated=true;
+      //notifying client that is autheticated
+      this.authenticatedListener.next(this.isAuthenticated);
+     })
     }
 
 
@@ -59,7 +88,8 @@ export class MainService  {
     password: string
 
   ) {
-    const signUpUser:SignUpModel={
+    const signUpUser:User={
+      _id:null,
       firstName: firstName,
     lastName: lastName,
     nickName: nickName,
@@ -75,14 +105,39 @@ export class MainService  {
     })
   }
 
+  openSingleChat(friendUserId) {
+    this.chatOneSocket.emit("one to one chat", this.userId, friendUserId);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //GROUP CHAT LOGIC
   //chat service.ts
 
-    // creating a subscription for the messages
+  // creating a subscription for the messages
   // private socket = io("http://localhost:3000");
-  private userId: string;
-  private message:MessageType;
+  private _username: string;
+  private message: MessageType;
 
-  private chatDisplay:ChatGroupType[] = [
+  private chatDisplay: ChatGroupType[] = [
     {
       joined: false,
       messages: [],
@@ -99,62 +154,61 @@ export class MainService  {
       groupNumber: 2
     }
   ];
-  private numberOfGroupChatOpen= new Subject<any>();
+  private numberOfGroupChatOpen = new Subject<any>();
 
   // constructor(private authService: AuthService) {}
 
-
-  getNumberOfGroupChatOpen(){
+  getNumberOfGroupChatOpen() {
     return this.numberOfGroupChatOpen.asObservable();
   }
 
-
   // could create another user model   passed back from data base that contain namme last name etc...
-  getUserId() {
-    return this.userId;
+  get_username() {
+    return this._username;
   }
 
-  login(username:MessageType){
-    this.userId=username.content;
-    this.message=username;
+  login(username: MessageType) {
+    this._username = username.content;
+    this.message = username;
   }
 
-  joinChatRoomOne(groupNumber:number){
+  joinChatRoomOne(groupNumber: number) {
     // this changes the display information so that the chat room's joined value is true, allowing it be displayed
-    this.chatDisplay[groupNumber].joined=true;
+    this.chatDisplay[groupNumber].joined = true;
 
     // this emits a subject/data that is taken within chat component.ts, where it updates it there
     this.numberOfGroupChatOpen.next([...this.chatDisplay]);
     // the socket now calls the join room one function within server.js that allows you to join the room
-    this.chatOneSocket.emit('join room one',this.message,groupNumber);
-//
+    this.chatOneSocket.emit("join room one", this.message, groupNumber);
+    //
   }
 
-  sendMessageOne(newMessage: MessageType,groupNumber:number) {
-    this.chatOneSocket.emit("send chat message one", newMessage,groupNumber);
+  sendMessageOne(newMessage: MessageType, groupNumber: number) {
+    this.chatOneSocket.emit("send chat message one", newMessage, groupNumber);
   }
   receiveMessageOne() {
-
-
-    const messagesUpdated = new Subject<{message:MessageType,chatNumber:number}>();
-    this.chatOneSocket.on("receive message one", (msg:MessageType,groupNumber:number)=> {
-
-      messagesUpdated.next({message:msg,chatNumber:groupNumber});
-    });
+    const messagesUpdated = new Subject<{
+      message: MessageType;
+      chatNumber: number;
+    }>();
+    this.chatOneSocket.on(
+      "receive message one",
+      (msg: MessageType, groupNumber: number) => {
+        messagesUpdated.next({ message: msg, chatNumber: groupNumber });
+      }
+    );
     return messagesUpdated.asObservable();
   }
 
-
-  newUserJoinRoomOne(){
-
-    const messagesUpdated = new Subject<{name:any,chatNumber:number}>();
-    this.chatOneSocket.on("new user connected one", (myName:MessageType,groupNumber:number)=>{
-
-      messagesUpdated.next({name:myName,chatNumber:groupNumber});
-    })
+  newUserJoinRoomOne() {
+    const messagesUpdated = new Subject<{ name: any; chatNumber: number }>();
+    this.chatOneSocket.on(
+      "new user connected one",
+      (myName: MessageType, groupNumber: number) => {
+        console.log(myName.content + groupNumber)
+        messagesUpdated.next({ name: myName, chatNumber: groupNumber });
+      }
+    );
     return messagesUpdated.asObservable();
-
-
-}
-
+  }
 }

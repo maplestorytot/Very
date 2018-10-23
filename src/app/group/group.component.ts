@@ -1,6 +1,5 @@
 import { Component } from "../../../node_modules/@angular/core";
-import { NgForm } from "../../../node_modules/@angular/forms";
-import { ChatService } from "../chat.service";
+
 import { MainService } from "../main.service";
 
 @Component({
@@ -11,7 +10,7 @@ import { MainService } from "../main.service";
 
 export class GroupComponent{
 
-  constructor(public chatServ:ChatService,public mainService:MainService){}
+  constructor(public mainService:MainService){}
   onJoinGroupA(groupNumber:number){
     this.mainService.joinChatRoomOne(groupNumber);
   }

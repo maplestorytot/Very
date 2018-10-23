@@ -1,0 +1,21 @@
+ul{
+  /*no dot*/
+  list-style: none;
+  padding:0;
+  margin:0;
+    /*make list items next to each other*/
+  display:flex;
+
+}
+a{
+  text-decoration: none;
+  color:white;
+}
+
+/* takes all the remaining space between the elements between them*/
+.spacer{
+  flex: 1 1 auto;
+}
+
+ul{
+}

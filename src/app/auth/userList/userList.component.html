@@ -1,0 +1,36 @@
+
+
+<div class='main'></div>
+<!--Move everything to the right of the page-->
+  <div class='secondary'>
+    <ul *ngFor="let users of allUserList">
+  <li class='card'>
+
+    <button  mat-button (click)="onOpenSingleChat(users._id)" >
+
+       {{users.firstName}} {{users.lastName}}
+
+    </button>
+
+  </li>
+</ul>
+
+</div>
+
+<!--
+
+  <div class='main'></div>
+    <div class='secondary'>
+      <ul *ngFor="let users of allUserList">
+    <li class='card'>
+
+      <button mat-button type="submit">
+        {{users.firstName}} {{users.lastName}}
+
+      </button>
+
+    </li>
+  </ul>
+
+  </div>
+  </form>-->

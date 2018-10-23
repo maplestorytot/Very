@@ -6,52 +6,16 @@
     <button *ngIf='putInUser==false' type='submit'>login</button>
   </form>
 
-<!--
-<h2>Groups!</h2>
+<div id="main">
+    <span class='divider'> </span>
 
-
-<ul>
-
-  <li>
-    <mat-card>
-      <img src="https://lolstatic-a.akamaihd.net/frontpage/apps/prod/LolGameInfo-Harbinger/en_US/8588e206d560a23f4d6dd0faab1663e13e84e21d/assets/assets/images/gi-landing-top.jpg"
-        alt="group A">
-      <br>
-      <button mat-stroked-button (click)='onJoinGroupA(0)'>Join Group A</button>
-
-    </mat-card>
-  </li>
-  <span class='divider'></span>
-  <li>
-    <mat-card>
-      <img src="http://speeli.com/question/2218/2016-07-08_812maplestory-win-cover-front-76248.jpg" alt="group A">
-      <br>
-      <button mat-stroked-button (click)='onJoinGroupB(1)'>Join Group B</button>
-
-    </mat-card>
-  </li>
-  <span class='divider'></span>
-
-  <li>
-    <mat-card>
-      <img src="https://lolstatic-a.akamaihd.net/frontpage/apps/prod/LolGameInfo-Harbinger/en_US/8588e206d560a23f4d6dd0faab1663e13e84e21d/assets/assets/images/gi-landing-top.jpg"
-        alt="group A">
-      <br>
-      <button mat-stroked-button (click)='onJoinGroupC(2)'>Join Group C</button>
-
-    </mat-card>
-  </li>
-</ul>
--->
-
-<div id="chatBox" *ngFor='let chats of chatGroups'>
+<div id="secondary" *ngFor='let chats of chatGroups'>
   <p *ngIf='putInUser==true&& chats.joined===true'>{{chats.groupNumber}}</p>
 
   <form *ngIf='putInUser==true&& chats.joined===true' (submit)="onSendMessage(socketForm,chats.groupNumber)" #socketForm='ngForm'>
-    <div class='messagesBox'>
       <div class="scrolling-wrapper">
 
-        <ul class="chats" *ngFor="let messages of chats.messages">
+        <ul  *ngFor="let messages of chats.messages">
           <li class='card'>
             <mat-card id='creator' *ngIf='messages.creator'>
               {{messages.creator}}
@@ -68,11 +32,11 @@
         <br>
         <button type="submit">submit</button>
         </div>
-        </div>
   </form>
-<span class='divider'> </span>
 
 
 
 </div>
+</div>
+
 </body>

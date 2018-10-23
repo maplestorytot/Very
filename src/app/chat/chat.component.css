@@ -1,4 +1,71 @@
+#main{
 
+  position: relative;
+  display: flex;
+
+}
+#secondary{
+  position: fixed;
+  display: flex;
+
+  bottom:0;
+  right:20rem;
+  width:30%;
+  display: flex;
+
+}
+/*
+body{
+  position: fixed;
+  right:0;
+  width: 100% ;
+}*/
+ul{
+  margin:auto 0;
+  align-content: center;
+  display: flex;
+  list-style: none;
+  width:100%;
+}
+
+
+.scrolling-wrapper {
+  overflow-x: hidden;
+  overflow-y: auto;
+  white-space: nowrap;
+  height:10rem;
+}
+
+.divider{
+
+  flex: 1 1 auto;
+
+}
+
+mat-card{
+  width:30%;
+
+}
+
+button{
+  width:50%;
+  text-align: left;
+}
+
+/*
+#main{
+
+  position: relative;
+
+}
+#secondary{
+  position: fixed;
+  bottom:0;
+  right:0;
+  width:30%;
+  display: inline-block;
+}
+/*
 body{
   position: fixed;
   right:0;
@@ -15,12 +82,7 @@ ul{
   display: flex;
   list-style: none;
 }
-#chatBox{
-  width:30%;
-  display: inline-block;
-  right:0;
-  bottom:0;
-}
+
 .scrolling-wrapper {
   overflow-x: hidden;
   overflow-y: auto;
@@ -34,10 +96,6 @@ ul{
 
 }
 
-.messagesBox{
-
-
-}
 
 img{
   width:30%;
@@ -56,3 +114,4 @@ button{
   width:50%;
   text-align: left;
 }
+*/

@@ -21,6 +21,8 @@ import { LoginComponent } from './auth/login/login.component';
 import{SignupComponent} from'./auth/signup/signup.component';
 import { GroupComponent } from './group/group.component';
 import { HttpClientModule } from '../../node_modules/@angular/common/http';
+import { UserListComponent } from './auth/userList/userList.component';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,9 @@ import { HttpClientModule } from '../../node_modules/@angular/common/http';
     ChatComponent,
     LoginComponent,
     SignupComponent,
-    GroupComponent
+    GroupComponent,
+    UserListComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,

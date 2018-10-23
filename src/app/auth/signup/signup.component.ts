@@ -1,14 +1,13 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { AuthService } from "../auth.service";
-import { Subscription } from "../../../../node_modules/rxjs";
+import { Component } from "@angular/core";
 import { NgForm } from "../../../../node_modules/@angular/forms";
+import { MainService } from "../../main.service";
 
 @Component({
   templateUrl: "./signup.component.html",
   styleUrls: ["./signup.component.css"]
 })
 export class SignupComponent /*implements OnInit, OnDestroy */{
-  constructor(public authService: AuthService) {}
+  constructor(public mainService: MainService) {}
   // private authStatusSubscriber: Subscription;
 
   // ngOnInit() {
@@ -22,7 +21,7 @@ export class SignupComponent /*implements OnInit, OnDestroy */{
       return;
     } else {
       // create the user
-      this.authService.onCreateUser(
+      this.mainService.onCreateUser(
         form.value.firstName,
         form.value.lastName,
         form.value.nickname,

@@ -1,0 +1,30 @@
+<mat-toolbar color="primary">
+    <span>
+     <a  routerLink="/">Very</a>
+    </span>
+    <span class="spacer"></span>
+    <ul>
+      <li *ngIf="userIsAuthenticated">
+        <!--Instead of sending a http request href... routerLink just rerenders the page based on the url-->
+        <a mat-button routerLink="/group" routerLinkActive="mat-accent">
+          Chats
+        </a>
+      </li>
+      <li *ngIf="!userIsAuthenticated">
+        <!--Instead of sending a http request href... routerLink just rerenders the page based on the url-->
+        <a  mat-button routerLink="/login" routerLinkActive="mat-accent">
+          Login
+        </a>
+      </li>
+      <li *ngIf="!userIsAuthenticated">
+        <a mat-button routerLink="/signup" routerLinkActive="mat-accent">
+          Signup
+        </a>
+      </li>
+      <li *ngIf="userIsAuthenticated">
+        <button mat-button (click)='onLogout()'>Log out</button>
+
+
+      </li>
+    </ul>
+</mat-toolbar>

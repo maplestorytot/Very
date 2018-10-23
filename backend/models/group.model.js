@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 
 const groupSchema = mongoose.Schema({
-  messageStash:{type:mongoose.Schema.Types.ObjectId, required: true,ref:'ChatMessage' },
-  users:{type:mongoose.Schema.Types.ObjectId,required:true, ref:'User'},
+  groupName:{type:String, required:true},
+  messageStash:[{type:mongoose.Schema.Types.ObjectId, required: true,ref:'ChatMessage' }],
+  users:[{type:mongoose.Schema.Types.ObjectId,required:true, ref:'User'}],
   password:{type:String, required:true}
 });
 

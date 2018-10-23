@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ChatService } from "../chat.service";
 import { NgForm } from "../../../node_modules/@angular/forms";
 import { Subscription } from "../../../node_modules/rxjs";
 import { MessageType } from "../message.model";
@@ -41,7 +40,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   // currentMessages:MessageType[]=[];
   // injecting the authentification service
-  constructor(private chatService: ChatService,private mainService:MainService) {}
+  constructor(private mainService:MainService) {}
   // put the receive messages in here so that it doesn't create more than one instance of the messages
   ngOnInit() {
     this.messagesSub = this.mainService
@@ -58,8 +57,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       // chat boxes joined
     this.chatNumberSub = this.mainService.getNumberOfGroupChatOpen().subscribe(chatNumber => {
       this.chatGroups = chatNumber;
-      console.log('dsafsadf');
-      console.log(this.chatGroups);
     });
 
   }
@@ -71,7 +68,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.putInUser = true;
     const notification: MessageType = {
       creator: null,
-      content: this.username + " has joined the chat room!"
+      content: this.username + " has joined the chat room!",
+      time:null
     };
     this.mainService.login(notification);
   }
@@ -82,7 +80,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     const message: MessageType = {
       content: form.value.typein,
-      creator: this.username
+      creator: this.username,
+      time:null
     };
       this.mainService.sendMessageOne(message,group);
       form.setValue({typein:""});
