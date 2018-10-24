@@ -35,6 +35,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private messagesSub: Subscription;
   private notificationSub: Subscription;
   private chatNumberSub: Subscription;
+  private friendOpenChat:Subscription;
   private username: string;
   // an array of either messages or notifications
 
@@ -58,6 +59,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.chatNumberSub = this.mainService.getNumberOfGroupChatOpen().subscribe(chatNumber => {
       this.chatGroups = chatNumber;
     });
+
+    this.friendOpenChat=this.mainService.openFriendChat().subscribe(ids=>{
+      console.log(ids.userId);
+      console.log(ids.friendId);
+    })
 
   }
   onLoginUser(form: NgForm) {

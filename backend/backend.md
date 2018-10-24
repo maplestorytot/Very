@@ -135,3 +135,37 @@ Displaying all users
 creating group chats
 
 
+
+
+Structure of Namespace/rooms for individual Chats
+General:
+-each user has their own room which they connect to when logging on 
+-whenever other users want to chat with them, they first connect to that user's room
+-conecting with that room notifies all users, including the first user that a connection has been made
+-they then create another room that is more specific between the two users, which is room (friendId+userId), where messages will be sent through
+
+
+user = userA
+friend=userB
+Joining Single Chat Rooms: ABA
+1. on sign in, userA socket joins own room (room + userAId)
+2. Server:  UserB clicks on userA... adds UserB socket to (room + userAId)
+3.  (userAId + userBId) create new room and add UserB socket to this room
+4.//  UserB client socket emit userAId and userBId
+3. Server: UserB socket emit to userA client socket (room + userAId) that UserB socket has joined the room
+4. Client: userA socket on "create new one to one chat room" (friendId + userId) add userA socket to this room 
+
+
+
+Joining Single Chat Rooms: ABA
+1. on sign in, user socket joins own room (room + userId)
+1. Friend clicks on user... client socket emit userId and friendId
+2. Server: socket on catches ... adds friend socket to (room + userId)
+  2a) (friendId + userId) create new room and add friend socket to this room
+3. Server: socket emit to (room + userId) that friendId socket has joined the room
+4. Client: socket on "create new one to one chat room" (friendId + userId) add user socket to this room 
+
+
+create:
+1. "join own room"
+2. 

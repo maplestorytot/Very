@@ -221,13 +221,21 @@ function postAuthenticate(socket, data){
   User.findOne({username:username}).then(user=>{
     socket.client.user=user;
 
-    console.log(socket.client.user)
+    // console.log(socket.client.user)
   // emitting a list of all the users so that client can display these users
   User.find().then(allUsers=>{
 
     socket.emit('get all users', user,allUsers);
 
   })
+
+
+
+  //ABA1 on sign in, user socket joins own room (room + userId)
+  socket.join("room" + user._id);
+  console.log(socket.rooms)
+
+  // console.log(user._id)
 
 //  Opening 1-1 CHATS
 //  method to join a 1-1 chat
@@ -276,9 +284,8 @@ socket.on("one to one chat",(userId,friendId)=>{
       }
       //5) unless the chat already exists then, open up the socket so that the users may talk
       else{
-        console.log('chat exists!')
-        // join the user to the room, which are named by the chat's id
-        socket.join("room" + _chat._id);
+        // console.log('chat exists!')
+
 
         _chat.messageStash.push({creator:_user,
           content:"Ryan has joined the chat!",
@@ -286,12 +293,32 @@ socket.on("one to one chat",(userId,friendId)=>{
         });
         // save updated  chat to database. could use update instead!
         _chat.save().then(result=>{
-          console.log(result);
+         // console.log(result);
         }).catch(err=>{
           console.log(err.message);
         })
 
+          // ABA2) join the user to the room, which are named by the friend's id
+          //socket is friend/UserB
+          //. Server:  UserB clicks on userA... adds UserB socket to (room + userAId)
+          socket.join("room" + friendId);
+          console.log(socket.rooms)
+          // console.log(friendId)
 
+          //ABA3  (userAId + userBId) create new room and add UserB socket to this room
+          //chat rooms name is based on whichever id string is greater
+          if(friendId>userId){
+              socket.join("room"+ friendId+userId)
+              // console.log("the room is :  "+ friendId+userId)
+            }
+          else{
+              socket.join("room"+ userId+ friendId)
+              // console.log("the room is :  "+ userId+friendId)
+
+            }
+            console.log("room"+ _user._id);
+          //ABA4. Server: UserB socket emit to userA client socket (room + userAId) that UserB socket has joined the room
+          chatRoom.to("room" + _user._id).emit("friend join single chat",_friend._id,_user._id)
 
        // chatRoom emits to roomOne clients an event
       // event: new user connected: passes name as a parameter
@@ -314,6 +341,20 @@ socket.on("one to one chat",(userId,friendId)=>{
  })
 
 
+// ABA5) Client: userA socket on "create new one to one chat room" (friendId + userId) add userA socket to this room
+ socket.on("friend join my chat",(userId,friendId)=>{
+   //chat rooms name is based on whichever id string is greater
+   if(friendId>userId){
+    socket.join("room"+ friendId+userId)
+
+   }
+   else{
+    socket.join("room"+ userId+ friendId)
+
+   }
+
+
+ })
 
 
 

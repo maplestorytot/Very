@@ -76,6 +76,8 @@ export class MainService  {
       //notifying client that is autheticated
       this.authenticatedListener.next(this.isAuthenticated);
      })
+
+
     }
 
 
@@ -107,9 +109,23 @@ export class MainService  {
 
   openSingleChat(friendUserId) {
     this.chatOneSocket.emit("one to one chat", this.userId, friendUserId);
+
+
   }
 
+  //receives server updates when joining users to next chat
+  openFriendChat(){
 
+    const openChatListener = new Subject<{ friendId:string,userId:string}>();
+
+    this.chatOneSocket.on("friend join single chat",(_friendId:string,_userId:string)=>{
+      console.log(_friendId+"joined")
+      this.chatOneSocket.emit("friend join my chat",_friendId,_userId);
+      openChatListener.next({friendId:_friendId, userId:_userId})
+    });
+
+    return openChatListener.asObservable();
+  }
 
 
 
