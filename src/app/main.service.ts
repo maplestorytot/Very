@@ -8,6 +8,7 @@ import {  User } from "./auth/auth.model";
 import { HttpClient } from "../../node_modules/@angular/common/http";
 import { Router } from "../../node_modules/@angular/router";
 import { Subject } from "../../node_modules/rxjs";
+import { Message } from "../../node_modules/@angular/compiler/src/i18n/i18n_ast";
 
 // keep here because could make more than 1 service
 @Injectable({
@@ -116,18 +117,48 @@ export class MainService  {
   //receives server updates when joining users to next chat
   openFriendChat(){
 
-    const openChatListener = new Subject<{ friendId:string,userId:string}>();
+    const openChatListener = new Subject<{ friendId:string,userId:string,chatId:string,chatMessages:MessageType[]}>();
 
-    this.chatOneSocket.on("friend join single chat",(_friendId:string,_userId:string)=>{
-      console.log(_friendId+"joined")
-      this.chatOneSocket.emit("friend join my chat",_friendId,_userId);
-      openChatListener.next({friendId:_friendId, userId:_userId})
+    this.chatOneSocket.on("friend join single chat",(_friendId:string,_userId:string,_chatId:string,_chatMessages:MessageType[])=>{
+      // console.log("someone joined me")
+      console.log(this.userId,_userId)
+      console.log(_friendId)
+      if(this.userId==_userId){
+        this.chatOneSocket.emit("friend join my chat",_friendId,_userId);
+        openChatListener.next({friendId:_friendId, userId:_userId,chatId:_chatId,chatMessages:_chatMessages});
+      }
+      //  if(this.userId==_userId){
+      //   this.chatOneSocket.emit("friend join my chat",_friendId,_userId);
+      //   //openChatListener.next({friendId:_friendId, userId:_userId,chatId:_chatId,chatMessages:_chatMessages});
+
+      // }
+      // openChatListener.next({friendId:_friendId, userId:_userId,chatId:_chatId,chatMessages:_chatMessages});
+
+
     });
 
     return openChatListener.asObservable();
   }
 
-
+  sendMessageSingle(userId:string, friendId:string,newMessage: MessageType, chatId: string) {
+    this.chatOneSocket.emit("send single message to room",userId,friendId, newMessage, chatId);
+  }
+  receiveMessageSingle() {
+    const singleMessagesUpdated = new Subject<{
+      message: MessageType;
+      chatId: string;
+      userId:string;
+      friendId:string
+    }>();
+    this.chatOneSocket.on(
+      "single chat send message",
+      (_userId:string,_friendId:string,msg: MessageType, chatId: string) => {
+        console.log('safdljsa')
+        singleMessagesUpdated.next({ message: msg, chatId: chatId,userId:_userId,friendId:_friendId });
+      }
+    );
+    return singleMessagesUpdated.asObservable();
+  }
 
 
 

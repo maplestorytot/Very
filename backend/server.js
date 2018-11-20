@@ -233,8 +233,8 @@ function postAuthenticate(socket, data){
 
   //ABA1 on sign in, user socket joins own room (room + userId)
   socket.join("room" + user._id);
-  console.log(socket.rooms)
-
+  console.log(socket.client.user._id+"Joined room " +user._id)
+  console.log(socket.client.id);
   // console.log(user._id)
 
 //  Opening 1-1 CHATS
@@ -256,9 +256,22 @@ socket.on("one to one chat",(userId,friendId)=>{
         console.log("user not found")
         return callback(new Error ("User not found"));
       }
+      //friend or user first
+      var chatSearchName
+
+      //2b) Querying or creating a single chat will be based on who's id is greater so that only one chat is created
+      //between users
+      if(friendId>userId){
+        chatSearchName=[_friend,_user]
+
+       }
+       else{
+        chatSearchName=[_user,_friend]
+
+       }
 
       //3) find a single chat where the user's array list is made of the user and friend
-    SingleChat.findOne({users:[_user,_friend]}).then(_chat=>{
+    SingleChat.findOne({users:chatSearchName}).then(_chat=>{
 
       //if no error, check if chat exists
        if(!_chat){
@@ -272,7 +285,7 @@ socket.on("one to one chat",(userId,friendId)=>{
                 content:"We have just began the best friendship ever!",
                 time:new Date()
               }],
-          users:[_user._id,_friend._id]
+          users:chatSearchName
         });
         //4)save new chat
         newSingleChat.save().then(res=>{
@@ -284,7 +297,6 @@ socket.on("one to one chat",(userId,friendId)=>{
       }
       //5) unless the chat already exists then, open up the socket so that the users may talk
       else{
-        // console.log('chat exists!')
 
 
         _chat.messageStash.push({creator:_user,
@@ -302,23 +314,45 @@ socket.on("one to one chat",(userId,friendId)=>{
           //socket is friend/UserB
           //. Server:  UserB clicks on userA... adds UserB socket to (room + userAId)
           socket.join("room" + friendId);
-          console.log(socket.rooms)
+          // console.log(socket.client.user._id + "joined room "+ friendId)
           // console.log(friendId)
 
           //ABA3  (userAId + userBId) create new room and add UserB socket to this room
           //chat rooms name is based on whichever id string is greater
           if(friendId>userId){
               socket.join("room"+ friendId+userId)
-              // console.log("the room is :  "+ friendId+userId)
+              console.log(socket.client.user._id+"joined room :  "+ friendId+userId)
             }
           else{
               socket.join("room"+ userId+ friendId)
-              // console.log("the room is :  "+ userId+friendId)
+              console.log(socket.client.user._id+"joined room :  "+ userId+friendId)
 
             }
-            console.log("room"+ _user._id);
+         //   console.log("room"+ _user._id);
           //ABA4. Server: UserB socket emit to userA client socket (room + userAId) that UserB socket has joined the room
-          chatRoom.to("room" + _user._id).emit("friend join single chat",_friend._id,_user._id)
+
+
+           /* getting room members so that we only send the request to one of the sockets, ie not the one who just sent it
+           this is done to resolve the problem of having multiple sockets in one socket's room and then when connecting to that socket's room, it will
+            send out the call to all of the sockets including ones not part of their chat.*/
+            // console.log(chatRoom.adapter.rooms);
+           //console.log(chatRoom.adapter.rooms["room" +_friend._id].sockets);
+            //var roomMembers=[];
+            for(var memberId in chatRoom.adapter.rooms["room" +_friend._id].sockets){
+              console.log(userId);
+              console.log(friendId);
+
+              console.log(memberId);
+              console.log(io.sockets.connected[memberId]);
+              io.to(`${memberId}`).emit('friend join single chat',_friend._id,_user._id,_chat._id,_chat.messageStash)
+
+              //roomMembers.push(member);
+            }
+
+            //console.log(roomMembers);
+            //console.log("room" +_friend._id)
+
+         //chatRoom.to("room" + _friend._id).emit("friend join single chat",_friend._id,_user._id,_chat._id,_chat.messageStash)
 
        // chatRoom emits to roomOne clients an event
       // event: new user connected: passes name as a parameter
@@ -343,20 +377,37 @@ socket.on("one to one chat",(userId,friendId)=>{
 
 // ABA5) Client: userA socket on "create new one to one chat room" (friendId + userId) add userA socket to this room
  socket.on("friend join my chat",(userId,friendId)=>{
+
    //chat rooms name is based on whichever id string is greater
    if(friendId>userId){
     socket.join("room"+ friendId+userId)
-
+    console.log(socket.client.user._id+"joined room :  "+ friendId+userId)
+    console.log('2')
    }
    else{
     socket.join("room"+ userId+ friendId)
+    console.log(socket.client.user._id+"joined room :  "+ userId+friendId)
+    console.log('3')
 
    }
 
 
  })
 
+ //for single chat messaging
+ socket.on("send single message to room",(userId,friendId, message, chatId)=>{
 
+  if(friendId>userId){
+    chatRoom.to("room"+ friendId+userId).emit("single chat send message",userId,friendId,message,chatId);
+
+  }
+else{
+  chatRoom.to("room"+ userId+friendId).emit("single chat send message",userId,friendId,message,chatId);
+
+
+  }
+  //search using chatId the chat and store into database
+ })
 
 
 

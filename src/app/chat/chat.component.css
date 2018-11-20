@@ -1,109 +1,23 @@
-#main{
 
-  position: relative;
-  display: flex;
-
-}
 #secondary{
-  position: fixed;
   display: flex;
 
-  bottom:0;
-  right:20rem;
   width:30%;
-  display: flex;
-
+  padding-right: 10rem;
 }
-/*
-body{
-  position: fixed;
-  right:0;
-  width: 100% ;
-}*/
+#scrolling-wrapper {
+  overflow-y: scroll;
+
+  overflow-x: hidden;
+  white-space: nowrap;
+  height:10rem;
+}
 ul{
   margin:auto 0;
   align-content: center;
   display: flex;
   list-style: none;
   width:100%;
-}
-
-
-.scrolling-wrapper {
-  overflow-x: hidden;
-  overflow-y: auto;
-  white-space: nowrap;
-  height:10rem;
-}
-
-.divider{
-
-  flex: 1 1 auto;
-
-}
-
-mat-card{
-  width:30%;
-
-}
-
-button{
-  width:50%;
-  text-align: left;
-}
-
-/*
-#main{
-
-  position: relative;
-
-}
-#secondary{
-  position: fixed;
-  bottom:0;
-  right:0;
-  width:30%;
-  display: inline-block;
-}
-/*
-body{
-  position: fixed;
-  right:0;
-  width: 100% ;
-}
-ul.chats{
-  margin:auto 0;
-  align-content: center;
-  display: flex;
-  list-style: none;
-  width:100%;
-}
-ul{
-  display: flex;
-  list-style: none;
-}
-
-.scrolling-wrapper {
-  overflow-x: hidden;
-  overflow-y: auto;
-  white-space: nowrap;
-  height:10rem;
-}
-
-.divider{
-
-  flex: 1 1 auto;
-
-}
-
-
-img{
-  width:30%;
-  height:30%;
-}
-mat-card{
-  width:30%;
-
 }
 .divider{
 
@@ -114,4 +28,15 @@ button{
   width:50%;
   text-align: left;
 }
-*/
+mat-card{
+  width:30%;
+
+}
+#main{
+  display:flex;
+  position:absolute;
+  left:0;
+  bottom:0;
+
+
+}

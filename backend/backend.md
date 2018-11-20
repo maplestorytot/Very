@@ -169,3 +169,12 @@ Joining Single Chat Rooms: ABA
 create:
 1. "join own room"
 2. 
+
+
+Big flaw in model....
+by creating rooms, when 
+         <chatRoom.to("room" + _friend._id).emit("friend join single chat",_friend._id,_user._id,_chat._id,_chat.messageStash)>
+
+         it sends to even other people within it, other third party people. thus, model fails
+
+         fixed by checking in the main.service.ts if the user id were the correct ones however, should not

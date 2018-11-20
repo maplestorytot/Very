@@ -5,5 +5,6 @@ import { User } from "./auth/auth.model";
 export interface SingleChatType{
   chatId:string;
   messages:MessageType[];
-  users:User[];
+  userId:string;
+  friendId:string;
 }
