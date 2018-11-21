@@ -48,17 +48,19 @@
 
 <div id="main">
 
-<div id="secondary" *ngFor='let singleChat of singleChat'>
+<div id="chaters" *ngFor='let singleChat of singleChat'>
 <!--<p *ngIf='putInUser==true&& chats.joined===true'>{{chats.groupNumber}}</p>-->
-<button mat-button (click)="clearChats(singleChat)">Clear all chats</button>
+<button id='friendName'>{{singleChat.friendId}}</button>
+<button class='clearButton' mat-button (click)="clearChats(singleChat)">Clear all chats</button>
+<div id="secondary">
 
 <form *ngIf='userIsAuthenticated==true' (submit)="onSendSingleMessage(singleForm,singleChat)" #singleForm='ngForm'>
-    <div id="scrolling-wrapper">
+    <div id="scrolling-wrapper" #scrollMe [scrollTop]="scrollMe.scrollHeight">
 
 
 
 
-      <ul  *ngFor="let messages of singleChat.messages">
+      <ul  *ngFor="let messages of singleChat.messages"   >
         <li class='card'>
         <p  *ngIf='messages.creator'>
           {{messages.creator.firstName}}
@@ -80,7 +82,7 @@
           </mat-card>-->
         </li>
       </ul><span class='divider'> </span>
-      <textarea matInput cols="30" rows="2" name="textIn" ngModel #textIn="ngModel" required></textarea>
+      <textarea matInput cols="30" rows="2" name="textIn" ngModel #textIn="ngModel" required  (keyup.enter)="onSendSingleMessage(singleForm,singleChat)"></textarea>
 
       <br>
       <button type="submit">submit</button>
@@ -89,7 +91,7 @@
 </form>
 
 
-
+</div>
 </div>
 </div>
 

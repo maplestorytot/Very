@@ -21,7 +21,18 @@ ul{
 button{
   width:50%;
   text-align: left;
+  opacity:1;
 }
 li{
 
+}
+h2{
+  color:rgba(255, 255, 255, 0.877);
+}
+mat-card{
+opacity: 0.4;
+
+}
+mat-stroked-button{
+  opacity: 1;
 }

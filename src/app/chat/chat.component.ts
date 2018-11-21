@@ -128,7 +128,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
 
 
-
       //     // const newSingleChat:SingleChatType={
       //     //   chatId:messageInfo.chatId,
       //     //   friendId:messageInfo.ch.friendId,
@@ -300,6 +299,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.singleChat.splice(index,1);
     console.log(this.singleChat.length)
   }
+
+
 
 
 

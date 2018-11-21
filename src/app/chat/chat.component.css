@@ -1,8 +1,8 @@
+body{
 
+}
 #secondary{
   display: flex;
-
-  width:30%;
   padding-right: 10rem;
 }
 #scrolling-wrapper {
@@ -17,26 +17,34 @@ ul{
   align-content: center;
   display: flex;
   list-style: none;
-  width:100%;
+
+}
+li{
 }
 .divider{
 
   flex: 1 1 auto;
 
 }
-button{
-  width:50%;
-  text-align: left;
-}
-mat-card{
-  width:30%;
 
-}
+
 #main{
   display:flex;
   position:absolute;
   left:0;
   bottom:0;
+  width:30%;
+  max-width: 30%;
 
+}
+#friendName{
+  display:inline-block;
+  width:50%;
+}
+.clearButton{
+  width:50%;
 
+}
+#chaters{
+  max-width: 100%;
 }
