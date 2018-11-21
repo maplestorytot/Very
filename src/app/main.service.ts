@@ -9,6 +9,7 @@ import { HttpClient } from "../../node_modules/@angular/common/http";
 import { Router } from "../../node_modules/@angular/router";
 import { Subject } from "../../node_modules/rxjs";
 import { Message } from "../../node_modules/@angular/compiler/src/i18n/i18n_ast";
+import { CreatorType } from "./creator.model";
 
 // keep here because could make more than 1 service
 @Injectable({
@@ -16,7 +17,7 @@ import { Message } from "../../node_modules/@angular/compiler/src/i18n/i18n_ast"
 })
 export class MainService  {
 
-
+  private currentUser:CreatorType;
   private chatOneSocket=io.connect('http://localhost:3000/');
 
   // if client is authenticated: to know if should display things
@@ -33,7 +34,10 @@ export class MainService  {
   // the subject to send out the list of users to user list component
   private allOfTheUsersListener= new Subject<any>();
   private authenticatedListener= new Subject<any>();
-
+  private currentUserListener=new Subject<any>();
+  getCurrentUserListener(){
+    return this.currentUserListener.asObservable();
+  }
   // the get for the list of user subject
   getAllOfTheUsersListener(){
     return this.allOfTheUsersListener.asObservable();
@@ -47,6 +51,9 @@ export class MainService  {
   }
   getUserId() {
     return this.userId;
+  }
+  getCurrentUser(){
+    return this.currentUser;
   }
   // on login will take in the username and password
   onLogin(username: string, password: string) {
@@ -65,6 +72,8 @@ export class MainService  {
       this.chatOneSocket.emit('authentication',user);
       // immediately afterwards, this get method for all the users
       this.chatOneSocket.on("get all users", (currentUser, allUsers: User[]) => {
+        this.currentUser=currentUser;
+        this.currentUserListener.next(currentUser);
         this.userId = currentUser._id;
         // list of user logic
        this.allOfUsers=allUsers;
@@ -120,11 +129,10 @@ export class MainService  {
     const openChatListener = new Subject<{ friendId:string,userId:string,chatId:string,chatMessages:MessageType[]}>();
 
     this.chatOneSocket.on("friend join single chat",(_friendId:string,_userId:string,_chatId:string,_chatMessages:MessageType[])=>{
-      // console.log("someone joined me")
-      console.log(this.userId,_userId)
-      console.log(_friendId)
+
       if(this.userId==_userId){
         this.chatOneSocket.emit("friend join my chat",_friendId,_userId);
+        console.log(_chatMessages)
         openChatListener.next({friendId:_friendId, userId:_userId,chatId:_chatId,chatMessages:_chatMessages});
       }
       //  if(this.userId==_userId){
@@ -153,7 +161,12 @@ export class MainService  {
     this.chatOneSocket.on(
       "single chat send message",
       (_userId:string,_friendId:string,msg: MessageType, chatId: string) => {
-        console.log('safdljsa')
+      /*  const aNewMessage:MessageType={
+          creator:msg.creator.firstName,
+          content:msg.content,
+         time:msg.time
+        }
+        */
         singleMessagesUpdated.next({ message: msg, chatId: chatId,userId:_userId,friendId:_friendId });
       }
     );

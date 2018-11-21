@@ -1,7 +1,16 @@
 const mongoose = require('mongoose');
 
 const messageSchema = mongoose.Schema({
-    creator:{type:mongoose.Schema.Types.ObjectId, required: true,ref:'User'},
+  creator:{
+    _id:{type:String, required:true},
+    //creator:{type:mongoose.Schema.Types.ObjectId, required: true,ref:'User'}
+    firstName:{type:String, required:true},
+    lastName: {type:String, required:true},
+    nickName:{type:String, required:true}
+  },
+
+
+
     content:{type:String, required:true},
     time:{type:String,required:true}
 });

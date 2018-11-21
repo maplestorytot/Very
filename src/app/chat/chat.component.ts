@@ -6,6 +6,7 @@ import { ChatGroupType } from "../chatGroup.model";
 import { MainService } from "../main.service";
 import { SingleChatType } from "../singleChat.model";
 import { invalid } from "../../../node_modules/@angular/compiler/src/render3/view/util";
+import { CreatorType } from "../creator.model";
 
 @Component({
   selector: "app-chat",
@@ -13,6 +14,7 @@ import { invalid } from "../../../node_modules/@angular/compiler/src/render3/vie
   styleUrls: ["./chat.component.css"]
 })
 export class ChatComponent implements OnInit, OnDestroy {
+
   chatGroups: ChatGroupType[] = [
     {
       joined: false,
@@ -45,7 +47,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private chatNumberSub: Subscription;
   private friendOpenChat:Subscription;
   private username: string;
-
+  private currentUser:CreatorType;
 
   // to know when to display chats if authenticated... used in the html
   userIsAuthenticated=false;
@@ -72,7 +74,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.userIsAuthenticated = this.mainService.getIsAuth();
     this.authListenerSubs=this.mainService.getAuthenticatedListener().subscribe(isAuthenticated=>{
-
+      this.currentUser=this.mainService.getCurrentUser();
       this.userIsAuthenticated=isAuthenticated;
     });
 
@@ -265,9 +267,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     if(form.invalid){
     return;
     }
-
+    const creator:CreatorType={
+      _id:this.currentUser._id,
+      firstName:this.currentUser.firstName,
+      lastName:this.currentUser.lastName,
+      nickName:this.currentUser.nickName
+    };
     const newSingleMessage:MessageType={
-        creator:this.username,
+        creator:creator,
         content:form.value.textIn,
         time:null
 
@@ -323,9 +330,15 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (form.invalid) {
       return;
     }
+    const creator:CreatorType={
+      _id:this.currentUser._id,
+      firstName:this.username,
+      lastName:'',
+      nickName:''
+    };
     const message: MessageType = {
       content: form.value.typein,
-      creator: this.username,
+      creator: creator,
       time:null
     };
       this.mainService.sendMessageOne(message,group);

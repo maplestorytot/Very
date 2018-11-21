@@ -61,7 +61,8 @@
       <ul  *ngFor="let messages of singleChat.messages">
         <li class='card'>
         <p  *ngIf='messages.creator'>
-          {{messages.creator}}
+          {{messages.creator.firstName}}
+          {{messages.creator.lastName}}
 
         </p>
         <p>

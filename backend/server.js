@@ -224,8 +224,14 @@ function postAuthenticate(socket, data){
     // console.log(socket.client.user)
   // emitting a list of all the users so that client can display these users
   User.find().then(allUsers=>{
+    const currentUser={
+      _id:user._id,
+      firstName:user.firstName,
+      lastName:user.lastName,
+      nickName:user.nickName
 
-    socket.emit('get all users', user,allUsers);
+    }
+    socket.emit('get all users', currentUser,allUsers);
 
   })
 
@@ -281,7 +287,12 @@ socket.on("one to one chat",(userId,friendId)=>{
         //if it doesn't exist, create a new chat
         const newSingleChat=new SingleChat({
           messageStash:[
-            {creator:_user,
+            {creator:{
+              _id:_user._id,
+              firstName:_user.firstName,
+              lastName:_user.lastName,
+              nickName:_user.nickName
+            },
                 content:"We have just began the best friendship ever!",
                 time:new Date()
               }],
@@ -298,7 +309,7 @@ socket.on("one to one chat",(userId,friendId)=>{
       //5) unless the chat already exists then, open up the socket so that the users may talk
       else{
 
-
+        /* //creating random chat messages
         _chat.messageStash.push({creator:_user,
           content:"Ryan has joined the chat!",
           time:new Date()
@@ -309,6 +320,7 @@ socket.on("one to one chat",(userId,friendId)=>{
         }).catch(err=>{
           console.log(err.message);
         })
+        */
 
           // ABA2) join the user to the room, which are named by the friend's id
           //socket is friend/UserB
@@ -339,24 +351,12 @@ socket.on("one to one chat",(userId,friendId)=>{
            //console.log(chatRoom.adapter.rooms["room" +_friend._id].sockets);
             //var roomMembers=[];
             for(var memberId in chatRoom.adapter.rooms["room" +_friend._id].sockets){
-              console.log(userId);
-              console.log(friendId);
-
-              console.log(memberId);
-              console.log(io.sockets.connected[memberId]);
+              console.log(_chat.messageStash)
               io.to(`${memberId}`).emit('friend join single chat',_friend._id,_user._id,_chat._id,_chat.messageStash)
 
-              //roomMembers.push(member);
             }
 
-            //console.log(roomMembers);
-            //console.log("room" +_friend._id)
 
-         //chatRoom.to("room" + _friend._id).emit("friend join single chat",_friend._id,_user._id,_chat._id,_chat.messageStash)
-
-       // chatRoom emits to roomOne clients an event
-      // event: new user connected: passes name as a parameter
-      // chatRoom.to("room" + _chat._id).emit("new user connected one", name,  _chat._id);
       }
       // catch for errors
     }).catch(err=>{
@@ -396,21 +396,105 @@ socket.on("one to one chat",(userId,friendId)=>{
 
  //for single chat messaging
  socket.on("send single message to room",(userId,friendId, message, chatId)=>{
+//1) find user
+User.findOne({_id:userId}).then(_user=>{
+  //check if the user exists
+  if (!_user){
+    console.log("user not found")
+    return callback(new Error ("User not found"));
+  }
+
+
+  //2) FIND IF FRIEND EXISTS
+  User.findOne({_id:friendId}).then(_friend=>{
+    //check if the user exists
+    if (!_friend){
+      console.log("user not found")
+      return callback(new Error ("User not found"));
+    }
+    //friend or user first
+    var chatSearchName
+
+    //2b) Querying or creating a single chat will be based on who's id is greater so that only one chat is created
+    //between users
+    if(friendId>userId){
+      chatSearchName=[_friend,_user]
+
+     }
+     else{
+      chatSearchName=[_user,_friend]
+
+     }
+
+
+
+  //search using chatId the chat and store into database
+
+  //3) find a single chat where the user's array list is made of the user and friend
+  SingleChat.findOne({users:chatSearchName}).then(_chat=>{
+
+    //if no error, check if chat exists
+     if(!_chat){
+      console.log("userId");
+
+      console.log("chat doesn't exist")
+      //if it doesn't exist, create a new chat
+      const newSingleChat=new SingleChat({
+        messageStash:[
+          {creator:_user,
+              content:"We have just began the best friendship ever!",
+              time:new Date()
+            }],
+        users:chatSearchName
+      });
+      //4)save new chat
+      newSingleChat.save().then(res=>{
+        console.log(res);
+      }).catch(err=>{
+        console.log(err.message)
+      })
+
+    }
+    //5) unless the chat already exists then, open up the socket so that the users may talk
+    else{
+
+      const newMessage={creator:{
+        _id:_user._id,
+        firstName:_user.firstName,
+        lastName:_user.lastName,
+        nickName:_user.nickName
+      },
+        content:message.content,
+        time:new Date()
+      };
+      console.log(newMessage)
+     //creating random chat messages
+      _chat.messageStash.push(newMessage);
+      // save updated  chat to database. could use update instead!
+      _chat.save().then(result=>{
+        console.log(result);
+      }).catch(err=>{
+        console.log(err.message);
+      })
+
+
 
   if(friendId>userId){
-    chatRoom.to("room"+ friendId+userId).emit("single chat send message",userId,friendId,message,chatId);
+    chatRoom.to("room"+ friendId+userId).emit("single chat send message",userId,friendId,newMessage,chatId);
 
   }
-else{
-  chatRoom.to("room"+ userId+friendId).emit("single chat send message",userId,friendId,message,chatId);
+  else{
+  chatRoom.to("room"+ userId+friendId).emit("single chat send message",userId,friendId,newMessage,chatId);
 
 
   }
-  //search using chatId the chat and store into database
+}
+
  })
 
+ })
 
-
+})})
 
 
 
@@ -544,7 +628,7 @@ socketAuth(io,{
   authenticate:authenticate,
   postAuthenticate:postAuthenticate,
   disconnect:disconnect,
-  timeout:100000
+  timeout:100000,
 })
 
 

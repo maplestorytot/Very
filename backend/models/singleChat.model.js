@@ -1,7 +1,18 @@
 const mongoose = require('mongoose');
 
 const singleSchema = mongoose.Schema({
-  messageStash:[{ creator:{type:mongoose.Schema.Types.ObjectId, required: true,ref:'User'},
+  messageStash:[ {
+
+
+    creator:{
+      _id:{type:String, required:true},
+      //creator:{type:mongoose.Schema.Types.ObjectId, required: true,ref:'User'}
+      firstName:{type:String, required:true},
+      lastName: {type:String, required:true},
+      nickName:{type:String, required:false}
+    },
+
+
   content:{type:String, required:true},
   time:{type:String,required:true}
 }],
