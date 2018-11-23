@@ -281,9 +281,9 @@ socket.on("one to one chat",(userId,friendId)=>{
 
       //if no error, check if chat exists
        if(!_chat){
-        console.log("userId");
+        //console.log("userId");
 
-        console.log("chat doesn't exist")
+       // console.log("chat doesn't exist")
         //if it doesn't exist, create a new chat
         const newSingleChat=new SingleChat({
           messageStash:[
@@ -333,11 +333,11 @@ socket.on("one to one chat",(userId,friendId)=>{
           //chat rooms name is based on whichever id string is greater
           if(friendId>userId){
               socket.join("room"+ friendId+userId)
-              console.log(socket.client.user._id+"joined room :  "+ friendId+userId)
+             // console.log(socket.client.user._id+"joined room :  "+ friendId+userId)
             }
           else{
               socket.join("room"+ userId+ friendId)
-              console.log(socket.client.user._id+"joined room :  "+ userId+friendId)
+             // console.log(socket.client.user._id+"joined room :  "+ userId+friendId)
 
             }
          //   console.log("room"+ _user._id);
@@ -351,7 +351,7 @@ socket.on("one to one chat",(userId,friendId)=>{
            //console.log(chatRoom.adapter.rooms["room" +_friend._id].sockets);
             //var roomMembers=[];
             for(var memberId in chatRoom.adapter.rooms["room" +_friend._id].sockets){
-              console.log(_chat.messageStash)
+            //  console.log(_chat.messageStash)
               io.to(`${memberId}`).emit('friend join single chat',_friend._id,_user._id,_chat._id,_chat.messageStash)
 
             }
@@ -381,13 +381,11 @@ socket.on("one to one chat",(userId,friendId)=>{
    //chat rooms name is based on whichever id string is greater
    if(friendId>userId){
     socket.join("room"+ friendId+userId)
-    console.log(socket.client.user._id+"joined room :  "+ friendId+userId)
-    console.log('2')
+   console.log(socket.client.user._id+"joined room :  "+ friendId+userId)
    }
    else{
     socket.join("room"+ userId+ friendId)
-    console.log(socket.client.user._id+"joined room :  "+ userId+friendId)
-    console.log('3')
+   console.log(socket.client.user._id+"joined room :  "+ userId+friendId)
 
    }
 
@@ -467,12 +465,12 @@ User.findOne({_id:userId}).then(_user=>{
         content:message.content,
         time:new Date()
       };
-      console.log(newMessage)
+    //  console.log(newMessage)
      //creating random chat messages
       _chat.messageStash.push(newMessage);
       // save updated  chat to database. could use update instead!
       _chat.save().then(result=>{
-        console.log(result);
+       // console.log(result);
       }).catch(err=>{
         console.log(err.message);
       })

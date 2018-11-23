@@ -129,11 +129,13 @@ export class MainService  {
     const openChatListener = new Subject<{ friendId:string,userId:string,chatId:string,chatMessages:MessageType[]}>();
 
     this.chatOneSocket.on("friend join single chat",(_friendId:string,_userId:string,_chatId:string,_chatMessages:MessageType[])=>{
-
-      if(this.userId==_userId){
+     // console.log("lets go!"+_chatId+_chatMessages[0].content);
+      if(this.userId==_friendId){
         this.chatOneSocket.emit("friend join my chat",_friendId,_userId);
-        console.log(_chatMessages)
+      }
+      else{
         openChatListener.next({friendId:_friendId, userId:_userId,chatId:_chatId,chatMessages:_chatMessages});
+
       }
       //  if(this.userId==_userId){
       //   this.chatOneSocket.emit("friend join my chat",_friendId,_userId);
@@ -161,12 +163,7 @@ export class MainService  {
     this.chatOneSocket.on(
       "single chat send message",
       (_userId:string,_friendId:string,msg: MessageType, chatId: string) => {
-      /*  const aNewMessage:MessageType={
-          creator:msg.creator.firstName,
-          content:msg.content,
-         time:msg.time
-        }
-        */
+
         singleMessagesUpdated.next({ message: msg, chatId: chatId,userId:_userId,friendId:_friendId });
       }
     );

@@ -79,8 +79,15 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
 
     this.messagesSingleSub=this.mainService.receiveMessageSingle().subscribe(messageInfo=>{
+      console.log(messageInfo);
+
       const newMessage:MessageType={
-        creator:messageInfo.message.creator,
+        creator:{
+          _id:messageInfo.message.creator._id,
+          firstName:messageInfo.message.creator.firstName,
+          lastName:messageInfo.message.creator.lastName,
+          nickName:messageInfo.message.creator.nickName
+        },
         content:messageInfo.message.content,
         time:messageInfo.message.time,
       };
@@ -91,9 +98,10 @@ export class ChatComponent implements OnInit, OnDestroy {
       // // open chat box if not already opened
       var createChat=true;
       let i;
+      console.log(this.singleChat.length);
       for (i=0;i<this.singleChat.length;i++) {
         if(messageInfo.chatId==this.singleChat[i].chatId){
-          // console.log('adsfjks')
+          console.log('make it baby')
           createChat=false;
           break;
         }else{
@@ -102,14 +110,15 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
         if(createChat==true){
            //get messages, should create a new chat box
-          this.mainService.openSingleChat(messageInfo.friendId);
+           //console.log(messageInfo.userId,this.currentUser._id)
 
+          this.mainService.openSingleChat(messageInfo.userId);
+        }
+        else{
+
+        this.singleChat[i].messages.push(newMessage);
         }
 
-        // console.log(i)
-        // console.log(this.singleChat[i])
-        // console.log(this.singleChat)
-        this.singleChat[i].messages.push(newMessage);
 
 
 
@@ -202,12 +211,34 @@ export class ChatComponent implements OnInit, OnDestroy {
 
  this.friendOpenChat=this.mainService.openFriendChat().subscribe(chat=>{
       // get chatId, get chat top 10 messages
-      // console.log(chat.userId);
-      // console.log(chat.friendId);
-      // console.log(chat.chatMessages);
-      // console.log(chat.chatId)
+      let exist=false;
+      let i=0;
+      for (i=0;i<this.singleChat.length;i++) {
+        if(chat.chatId==this.singleChat[i].chatId){
+          exist=true;
+          break;
+        } else{
+          exist=false;
 
-      console.log('new user joined your chat')
+        }
+
+      }
+      if(Boolean(exist)==true){
+
+      } else{
+        const newSingleChat:SingleChatType={
+          chatId:chat.chatId,
+          friendId:chat.friendId,
+          userId:chat.userId,
+          messages:chat.chatMessages
+
+
+        }
+        //console.log(newSingleChat.messages)
+        this.singleChat.push(newSingleChat);
+      }
+/*
+
       let exist=false;
 
       // console.log(this.singleChat.length);
@@ -253,10 +284,10 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
 
 
+*/
+
 
     });
-
-
 
     }
 
