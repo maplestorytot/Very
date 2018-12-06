@@ -21,7 +21,7 @@
         <ul  *ngFor="let messages of chats.messages">
           <li class='card'>
             <mat-card class='creator' *ngIf='messages.creator'>
-              {{messages.creator}}
+              {{messages.creator.firstName}}
 
             </mat-card>
             <mat-card class='content'>
