@@ -20,6 +20,8 @@ constructor(public mainService:MainService){}
     });
 
   }
+ // gzo2a. userB clicks on userA...
+
    onOpenSingleChat(friendId:string){
 
     this.mainService.openSingleChat(friendId)

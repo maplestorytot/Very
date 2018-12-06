@@ -178,3 +178,52 @@ by creating rooms, when
          it sends to even other people within it, other third party people. thus, model fails
 
          fixed by checking in the main.service.ts if the user id were the correct ones however, should not
+
+
+
+
+Recreating Backend Model:
+summary: we use rooms to make searching for users easier. otherwise, msgs are sent directly to sockets
+question: if you log off the socket will it change the socket id? if not, then can send socket id with msg, if yes, send userid and search for socket id every time.  
+
+Joining single chats:
+comment code: gzo
+
+for:
+
+userA
+userB
+
+gzo1. on sign in, userA socket joins own room (room + userAId)
+    location: server.js
+gzo2a. userB clicks on userA... 
+    location: user list component
+gzo2b userB client socket emit userId and friendId (userA,userB id) to server
+    location: main service
+gzo3. Server: socket on catches ... adds userB socket to (room + userAId)
+    location: server.js
+gzo4. server sends chat info to userB
+    location: server.js
+gzo5. userB main service receives chat box opens for userB
+    location:gzo5a) main service -->gzo5b) chat component
+
+
+userB sends messages:
+gzo6. userB sends a message
+    location:gzo6a)chat component-->gzo6b) main service
+gzo7. server: socket on catches --> 
+    location: server.js
+gzo8. server saves msg to database. 
+    location: server.js
+
+gzo9a.finds socket that matches userA socket id with userA id within (room + userAId)
+gzo9b. server send msg to userA, userB socket directly
+    location: server.js
+gzo10. userA userB receives msg, client checks if the chat is already open. 
+    location: main service 
+gzo10a) if not, will send req for chat to server
+    location: chat component
+gzo10b) if yes, will add new msg to chat
+    location: chat component
+
+

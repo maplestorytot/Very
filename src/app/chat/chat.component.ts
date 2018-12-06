@@ -93,7 +93,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       };
 
 
-      // console.log(newMessage)
 
       // // open chat box if not already opened
       var createChat=true;
@@ -101,115 +100,28 @@ export class ChatComponent implements OnInit, OnDestroy {
       console.log(this.singleChat.length);
       for (i=0;i<this.singleChat.length;i++) {
         if(messageInfo.chatId==this.singleChat[i].chatId){
-          console.log('make it baby')
           createChat=false;
           break;
         }else{
 
         }
       }
-        if(createChat==true){
+      // gzo10a) if not, will send req for chat to server
+        if(createChat == true){
            //get messages, should create a new chat box
            //console.log(messageInfo.userId,this.currentUser._id)
 
-          this.mainService.openSingleChat(messageInfo.userId);
+          this.mainService.openSingleChat(messageInfo.friendId);
         }
+        // gzo10b) if yes, will add new msg to chat
         else{
 
         this.singleChat[i].messages.push(newMessage);
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      //     // const newSingleChat:SingleChatType={
-      //     //   chatId:messageInfo.chatId,
-      //     //   friendId:messageInfo.ch.friendId,
-      //     //   userId:messageInfo.userId,
-      //     //   messages:messageInfo.message
-
-
-      //     // }
-      //     // console.log(newSingleChat);
-
-          // this.singleChat.push(newSingleChat);
-
-      //   }
-
-
-        // console.log(i)
-        // console.log(this.singleChat[i])
-        // console.log(this.singleChat)
-        // this.singleChat[i].messages.push(newMessage);
-      //   console.log(i)
-      //   console.log(this.singleChat[i])
-      //   console.log(this.singleChat)
-      // }
-
-
-
-
-
-
-
-
-    //   if(this.singleChat.length>=1){
-    //     let i;
-    //   for (i=0;i<this.singleChat.length;i++) {
-    //     // adding message to the chat
-    //     if(messageInfo.chatId==this.singleChat[i].chatId){
-    //       this.singleChat[i].messages.push(newMessage);
-
-    //       //creating a new chat if it isn't up yet
-    //     } else{
-    //       const newSingleChat:SingleChatType={
-    //         chatId:messageInfo.chatId,
-    //         friendId:chat.friendId,
-    //         userId:chat.userId,
-    //         messages:chat.chatMessages
-
-
-    //       }
-    //       console.log(newSingleChat);
-
-    //       this.singleChat.push(newSingleChat);
-
-    //     }
-    //   }
-    //  } else{
-    //     const newSingleChat:SingleChatType={
-    //       chatId:chat.chatId,
-    //       friendId:chat.friendId,
-    //       userId:chat.userId,
-    //       messages:chat.chatMessages
-
-
-    //     }
-
-    //     this.singleChat.push(newSingleChat);
-
-    //   }
-
-
-
     });
-
- this.friendOpenChat=this.mainService.openFriendChat().subscribe(chat=>{
+  // gzo5b. userB main service receives chat box opens for userB
+  this.friendOpenChat=this.mainService.openFriendChat().subscribe(chat=>{
       // get chatId, get chat top 10 messages
       let exist=false;
       let i=0;
@@ -228,101 +140,29 @@ export class ChatComponent implements OnInit, OnDestroy {
       } else{
         const newSingleChat:SingleChatType={
           chatId:chat.chatId,
-          friendId:chat.friendId,
-          userId:chat.userId,
+          friendObj:chat.friendObj,
+          userObj:chat.userObj,
           messages:chat.chatMessages
-
-
         }
-        //console.log(newSingleChat.messages)
         this.singleChat.push(newSingleChat);
       }
-/*
-
-      let exist=false;
-
-      // console.log(this.singleChat.length);
-     // if the length is greater than one, then run the for loop, otherwise,
-      if(this.singleChat.length>=1){
-        let i;
-      for (i=0;i<this.singleChat.length;i++) {
-
-        if(chat.chatId==this.singleChat[i].chatId){
-          exist=false;
-          break;
-        } else{
-          exist=true;
-
-        }
-
-      }
-     } else{
-        const newSingleChat:SingleChatType={
-          chatId:chat.chatId,
-          friendId:chat.friendId,
-          userId:chat.userId,
-          messages:chat.chatMessages
-
-
-        }
-
-        this.singleChat.push(newSingleChat);
-
-      }
-      if(Boolean(exist)===true){
-        const newSingleChat:SingleChatType={
-          chatId:chat.chatId,
-          friendId:chat.friendId,
-          userId:chat.userId,
-          messages:chat.chatMessages
-
-
-        }
-
-        this.singleChat.push(newSingleChat);
-
-      }
-
-
-*/
-
-
     });
 
     }
 
 
-
+  //  gzo6a. userB sends a message
   onSendSingleMessage(form:NgForm,singleChat){
     if(form.invalid){
     return;
     }
-    const creator:CreatorType={
-      _id:this.currentUser._id,
-      firstName:this.currentUser.firstName,
-      lastName:this.currentUser.lastName,
-      nickName:this.currentUser.nickName
-    };
     const newSingleMessage:MessageType={
-        creator:creator,
+        creator:this.currentUser,
         content:form.value.textIn,
         time:null
-
     }
-    this.mainService.sendMessageSingle(singleChat.userId,singleChat.friendId,newSingleMessage,singleChat.chatId);
+    this.mainService.sendMessageSingle(singleChat.userObj._id,singleChat.friendObj._id,newSingleMessage,singleChat.chatId);
     form.setValue({textIn:""});
-    // var out = document.getElementById("scroller-wrapper");
-    // out.scrollTop=out.scrollHeight-out.clientHeight;
-    // var messageBody = document.querySelector('#messageBody');
-    // messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
-
-    //This is to make the scroller always be at the bottom
-
-    // // allow 1px inaccuracy by adding 1
-    // var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
-    // if(isScrolledToBottom){
-    // out.scrollTop = out.scrollHeight - out.clientHeight;
-    // }
   }
 
 

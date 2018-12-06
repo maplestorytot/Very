@@ -1,10 +1,11 @@
 import { MessageType } from "./message.model";
 import { User } from "./auth/auth.model";
+import { CreatorType } from "./creator.model";
 
 //forces objects to have like a class
 export interface SingleChatType{
   chatId:string;
   messages:MessageType[];
-  userId:string;
-  friendId:string;
+  userObj:CreatorType;
+  friendObj:CreatorType;
 }
