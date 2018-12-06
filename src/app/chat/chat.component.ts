@@ -74,8 +74,13 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.userIsAuthenticated = this.mainService.getIsAuth();
     this.authListenerSubs=this.mainService.getAuthenticatedListener().subscribe(isAuthenticated=>{
-      this.currentUser=this.mainService.getCurrentUser();
-      this.userIsAuthenticated=isAuthenticated;
+        this.currentUser=this.mainService.getCurrentUser();
+        this.userIsAuthenticated=isAuthenticated;
+        if(Boolean(isAuthenticated)===false){
+           this.singleChat=[];
+
+        }
+
     });
 
     this.messagesSingleSub=this.mainService.receiveMessageSingle().subscribe(messageInfo=>{

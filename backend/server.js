@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const mongoose = require("mongoose");
@@ -164,16 +165,7 @@ app.use(
           console.log("Fail Authentificaiton");
           return callback(new Error("Invalid Authentification Credentials"));
         });
-      // console.log(mySingleChat);
-      //   SingleChat.insert({messageStash:mySingleChat.messageStash,users:mySingleChat.users}).then(result=>{
-      //     res.status(201).json({
-      //       message:"chat created",
-      //       result:result
-      //   });
-      //   console.log("new chat created " + mySingleChat)
-      // }).catch(err=>{
-      //   res.status(500).json({message:'Invalid Authentification credentials!'});
-      // })
+
     });
   })
 );
@@ -197,6 +189,19 @@ function authenticate(socket, data, callback) {
           // if password is correct, i want to note to server by console log
           if (res) {
             console.log("Authentification Valid");
+            //ayth1) create token during authentication
+            const token = jwt.sign(
+              //based on input data of your choice which will be encrypted
+              { email: user.email, userId: user._id },
+              //this is the extra piece of randomfyer to token
+              "my super duper secret code",
+              //when it should expire
+              { expiresIn: "1h" }
+            );
+            //ayth2) send token back to client by changing socket headers
+            socket.ryantoken=token;
+            //console.log(token) both are same!!
+            //console.log(socket.handshake.headers.token);
             return callback(null, bycrpt.compare(password, user.password));
           } else {
             console.log("Authentification Fail");
@@ -214,7 +219,7 @@ function authenticate(socket, data, callback) {
     });
 }
 
-//what is avaliable after authentification functions for the users
+//called after authenticate is complete : it is what is avaliable after authentification functions for the users
 function postAuthenticate(socket, data) {
   var username = data.username;
   // keeping track on the current user
@@ -230,7 +235,12 @@ function postAuthenticate(socket, data) {
         lastName: user.lastName,
         nickName: user.nickName
       };
-      socket.emit("get all users", currentUser, allUsers);
+      //ayth2b) only continue authenticated user/send users data if token exists
+      if(socket.ryantoken){
+        console.log(socket.ryantoken)
+          //ayth2) send token back to client by changing socket headers
+        socket.emit("get all users", currentUser, allUsers, socket.ryantoken );
+      }
     });
 
     //gzo1. on sign in, userA socket joins own room (room + userAId)
@@ -239,6 +249,11 @@ function postAuthenticate(socket, data) {
     //  Opening 1-1 CHATS
     //  method to join a 1-1 chat
     socket.on("one to one chat", (userId, friendId) => {
+      if(Boolean(checkToken(socket.ryantoken,socket.client.user._id)==false)){
+        console.log('User authentification Error');
+        return;
+      }
+
       //1) find user
       User.findOne({ _id: userId })
         .then(_user => {
@@ -321,6 +336,7 @@ function postAuthenticate(socket, data) {
     });
 
     function connectAndSendChat(socket, friendId, _friend, _user, _chat) {
+
       //gzo3. Server: socket on catches ... adds userB socket to (room + userAId)
       socket.join("room" + friendId);
       //gzo4. server sends chat info to userB
@@ -348,6 +364,11 @@ function postAuthenticate(socket, data) {
     socket.on(
       "send single message to room",
       (userId, friendId, message, chatId) => {
+        //ayth2b) verify token... if the token and the request's userid the same.
+        if(Boolean(checkToken(socket.ryantoken,socket.client.user._id)==false)){
+          console.log('User authentification Error');
+          return;
+        }
         //1) find user
         User.findOne({ _id: userId }).then(_user => {
           //check if the user exists
@@ -428,6 +449,8 @@ function postAuthenticate(socket, data) {
                 /* how it works: for memberId used to get ids of sockets connected to userA's room, then,
                  if statement filters out the ones that you aren't supposed to send to, ie not userA or userB
                  */
+
+
                 for (var memberId in chatRoom.adapter.rooms[
                   "room" + _friend._id
                 ].sockets) {
@@ -562,4 +585,27 @@ function security() {
       console.log("Authentification Fail");
     }
   });
+}
+
+// ayth2b) verify token... if the token and the request's userid the same.
+function checkToken(_token,currentUserId){
+  try {
+    /*ayth6) server decodes token and compares the user's userid with the token's decoded userid
+    ayth6a) if good then can continue with action
+    ayth6b) else ??? return u failed */
+    const token = _token;
+    // next will keep any fields created
+    const decodedToken=jwt.verify(token, "my super duper secret code",
+    );
+    if(currentUserId==decodedToken.userId){
+      return true;
+    }
+    else{
+      return false;
+    }
+
+  } catch (error) {
+    res.status(401).json({ message: "You are not authenticated!" });
+  }
+
 }
