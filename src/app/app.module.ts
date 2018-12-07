@@ -23,6 +23,7 @@ import { GroupComponent } from './group/group.component';
 import { HttpClientModule } from '../../node_modules/@angular/common/http';
 import { UserListComponent } from './auth/userList/userList.component';
 import { HeaderComponent } from './header/header.component';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { HeaderComponent } from './header/header.component';
     SignupComponent,
     GroupComponent,
     UserListComponent,
-    HeaderComponent
+    HeaderComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

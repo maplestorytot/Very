@@ -3,30 +3,31 @@ import { Subscription } from "../../../../node_modules/rxjs";
 import { NgForm } from "../../../../node_modules/@angular/forms";
 import { MainService } from "../../main.service";
 import { User } from "../auth.model";
+import { CreatorType } from "../../creator.model";
 
 @Component({
   templateUrl: "./userList.component.html",
   styleUrls: ["./userList.component.css"]
 })
-export class UserListComponent implements OnInit,OnDestroy{
-constructor(public mainService:MainService){}
+export class UserListComponent implements OnInit, OnDestroy {
+  constructor(public mainService: MainService) {}
   // subscription to mainservice's getAllOfTheUsersListener
   private allOfUsersSub: Subscription;
-  allUserList:User[];
+  allUserList: User[];
   ngOnInit() {
     // update the existing user list to display
-    this.allOfUsersSub = this.mainService.getAllOfTheUsersListener().subscribe(allUser=>{
-      this.allUserList=allUser;
-    });
-
+    this.allOfUsersSub = this.mainService
+      .getAllOfTheUsersListener()
+      .subscribe(allUser => {
+        this.allUserList = allUser;
+      });
   }
- // gzo2a. userB clicks on userA...
+  // gzo2a. userB clicks on userA...
+  onOpenSingleChat(friendId: string) {
+    this.mainService.openSingleChat(friendId);
+  }
 
-   onOpenSingleChat(friendId:string){
-
-    this.mainService.openSingleChat(friendId)
-    }
-ngOnDestroy(){
-  this.allOfUsersSub.unsubscribe();
-}
+  ngOnDestroy() {
+    this.allOfUsersSub.unsubscribe();
+  }
 }

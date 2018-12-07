@@ -575,24 +575,14 @@ socketAuth(io, {
   timeout: 100000
 });
 
-function security() {
-  bycrpt.compare(password, user.password, function(err, res) {
-    // if password is correct, i want to note to server by console log
-    if (res) {
-      console.log("Authentification Valid");
-      return callback(null, bycrpt.compare(password, user.password));
-    } else {
-      console.log("Authentification Fail");
-    }
-  });
-}
+
 
 // ayth2b) verify token... if the token and the request's userid the same.
 function checkToken(_token,currentUserId){
   try {
-    /*ayth6) server decodes token and compares the user's userid with the token's decoded userid
-    ayth6a) if good then can continue with action
-    ayth6b) else ??? return u failed */
+    //ayth6) server decodes token and compares the user's userid with the token's decoded userid
+    //ayth6a) if good then can continue with action
+    //ayth6b) else ??? return u failed
     const token = _token;
     // next will keep any fields created
     const decodedToken=jwt.verify(token, "my super duper secret code",

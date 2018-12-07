@@ -253,6 +253,28 @@ export class MainService {
     return singleMessagesUpdated.asObservable();
   }
 
+
+
+  // psts2. search in main service for userId348043: returns it profile component to display done within ngoninit
+
+  getSpecificUser(userId:string){
+    for(let i=0;i<this.allOfUsers.length;i++){
+      if(this.allOfUsers[i]._id===userId){
+        return this.allOfUsers[i];
+      }
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
   // GROUP CHAT LOGIC
   // chat service.ts
 
