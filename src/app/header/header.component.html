@@ -7,7 +7,7 @@
       <li *ngIf="userIsAuthenticated">
         <!--Instead of sending a http request href... routerLink just rerenders the page based on the url-->
         <a mat-button routerLink="/group" routerLinkActive="mat-accent">
-          Chats
+          Group Chats
         </a>
       </li>
       <li *ngIf="!userIsAuthenticated">

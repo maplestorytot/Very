@@ -48,7 +48,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private friendOpenChat:Subscription;
   private username: string;
   private currentUser:CreatorType;
-
+  groupAuthenticated=false;
   // to know when to display chats if authenticated... used in the html
   userIsAuthenticated=false;
   private authListenerSubs:Subscription;
@@ -193,6 +193,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (form.invalid) {
       return;
     }
+    this.groupAuthenticated=true;
     this.username = form.value.username;
     this.putInUser = true;
     const notification: MessageType = {

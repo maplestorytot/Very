@@ -3,7 +3,7 @@ const router = express.Router();
 const path = require("path");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
-
+const request = require("request");
 const app = express();
 const mongoose = require("mongoose");
 const socket = require("socket.io");
@@ -165,7 +165,6 @@ app.use(
           console.log("Fail Authentificaiton");
           return callback(new Error("Invalid Authentification Credentials"));
         });
-
     });
   })
 );
@@ -199,7 +198,7 @@ function authenticate(socket, data, callback) {
               { expiresIn: "1h" }
             );
             //ayth2) send token back to client by changing socket headers
-            socket.ryantoken=token;
+            socket.ryantoken = token;
             //console.log(token) both are same!!
             //console.log(socket.handshake.headers.token);
             return callback(null, bycrpt.compare(password, user.password));
@@ -235,11 +234,18 @@ function postAuthenticate(socket, data) {
         lastName: user.lastName,
         nickName: user.nickName
       };
+      var imgurl
       //ayth2b) only continue authenticated user/send users data if token exists
-      if(socket.ryantoken){
-        console.log(socket.ryantoken)
-          //ayth2) send token back to client by changing socket headers
-        socket.emit("get all users", currentUser, allUsers, socket.ryantoken );
+      if (socket.ryantoken) {
+        //ayth2) send token back to client by changing socket headers
+
+        // since this is a callback, will send img url once completed getting img
+        getNASABackground(function(data){
+          socket.emit("get back img", data)
+        })
+
+        // nasa APOD  url included
+        socket.emit("get all users", currentUser, allUsers);
       }
     });
 
@@ -249,8 +255,10 @@ function postAuthenticate(socket, data) {
     //  Opening 1-1 CHATS
     //  method to join a 1-1 chat
     socket.on("one to one chat", (userId, friendId) => {
-      if(Boolean(checkToken(socket.ryantoken,socket.client.user._id)==false)){
-        console.log('User authentification Error');
+      if (
+        Boolean(checkToken(socket.ryantoken, socket.client.user._id) == false)
+      ) {
+        console.log("User authentification Error");
         return;
       }
 
@@ -336,7 +344,6 @@ function postAuthenticate(socket, data) {
     });
 
     function connectAndSendChat(socket, friendId, _friend, _user, _chat) {
-
       //gzo3. Server: socket on catches ... adds userB socket to (room + userAId)
       socket.join("room" + friendId);
       //gzo4. server sends chat info to userB
@@ -365,8 +372,10 @@ function postAuthenticate(socket, data) {
       "send single message to room",
       (userId, friendId, message, chatId) => {
         //ayth2b) verify token... if the token and the request's userid the same.
-        if(Boolean(checkToken(socket.ryantoken,socket.client.user._id)==false)){
-          console.log('User authentification Error');
+        if (
+          Boolean(checkToken(socket.ryantoken, socket.client.user._id) == false)
+        ) {
+          console.log("User authentification Error");
           return;
         }
         //1) find user
@@ -449,7 +458,6 @@ function postAuthenticate(socket, data) {
                 /* how it works: for memberId used to get ids of sockets connected to userA's room, then,
                  if statement filters out the ones that you aren't supposed to send to, ie not userA or userB
                  */
-
 
                 for (var memberId in chatRoom.adapter.rooms[
                   "room" + _friend._id
@@ -564,6 +572,7 @@ function postAuthenticate(socket, data) {
   });
 }
 
+// function to get nasa APOD picture for background
 function disconnect(socket) {
   console.log(socket.id + " disconnected");
 }
@@ -575,27 +584,50 @@ socketAuth(io, {
   timeout: 100000
 });
 
+function getNASABackground(callback) {
+  year = Math.floor(Math.random() * (2018 - 2000) + 2000);
+  month = Math.floor(Math.random() * (12 - 1) + 1);
+  day = Math.floor(Math.random() * (28 - 1) + 1);
+  if (day <= 9) {
+    day = "0" + day;
+  }
+  if (month <= 9) {
+    month = "0" + month;
+  }
 
+  date = year + "-" + month + "-" + day;
+
+  request(
+    "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&hd=true&date=" + date,
+    { json: true },
+    (err, res, body) => {
+      if (err) {
+        return console.log(err);
+      }
+      else{
+          callback(body)
+      }
+    }
+  );
+
+
+}
 
 // ayth2b) verify token... if the token and the request's userid the same.
-function checkToken(_token,currentUserId){
+function checkToken(_token, currentUserId) {
   try {
     //ayth6) server decodes token and compares the user's userid with the token's decoded userid
     //ayth6a) if good then can continue with action
     //ayth6b) else ??? return u failed
     const token = _token;
     // next will keep any fields created
-    const decodedToken=jwt.verify(token, "my super duper secret code",
-    );
-    if(currentUserId==decodedToken.userId){
+    const decodedToken = jwt.verify(token, "my super duper secret code");
+    if (currentUserId == decodedToken.userId) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
-
   } catch (error) {
     res.status(401).json({ message: "You are not authenticated!" });
   }
-
 }

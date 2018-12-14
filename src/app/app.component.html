@@ -1,4 +1,6 @@
-<body>
+<div [ngStyle]="{'background-image': 'url(' + backgroundUrl + ')'}">
+
+<body >
     <main>
         <app-header></app-header>
           <router-outlet></router-outlet>
@@ -8,3 +10,4 @@
       </main>
 </body>
 
+</div>

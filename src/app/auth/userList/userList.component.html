@@ -2,14 +2,14 @@
 
 <div class='main'></div>
 <!--Move everything to the right of the page-->
-  <div class='secondary'>
+  <div class='secondary' >
     <ul *ngFor="let users of allUserList">
-  <li class='card'>
+  <li>
         <!--  //psts1. in userList, person clicks on user, sending the userId to mainService-->
 
     <a mat-button color="primary" [routerLink]="['/profile',users._id]">P</a>
 
-    <button  mat-button (click)="onOpenSingleChat(users._id)" >
+    <button id="nameButton"  mat-button color='accent' background-color='primary' (click)="onOpenSingleChat(users._id)" >
 
        {{users.firstName}} {{users.lastName}}
 

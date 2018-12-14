@@ -15,6 +15,7 @@ import { CreatorType } from "./creator.model";
   providedIn: "root"
 })
 export class MainService {
+  private backgroundIMGURL:string;
   private currentUser: CreatorType;
   private tokenTimer:any;
   private chatOneSocket = io.connect("http://localhost:3000/");
@@ -33,12 +34,16 @@ export class MainService {
   private allOfTheUsersListener = new Subject<any>();
   private authenticatedListener = new Subject<any>();
   private currentUserListener = new Subject<any>();
+  private backgroundURLListener=new Subject<string>();
   getCurrentUserListener() {
     return this.currentUserListener.asObservable();
   }
   // the get for the list of user subject
   getAllOfTheUsersListener() {
     return this.allOfTheUsersListener.asObservable();
+  }
+  getBackGroundPicListener(){
+    return this.backgroundURLListener.asObservable();
   }
   // if client is authenticated: to know if should display things
   getAuthenticatedListener() {
@@ -69,9 +74,15 @@ export class MainService {
 
     // use socket io auth authentication method
     this.chatOneSocket.emit("authentication", user);
+    this.chatOneSocket.on('get back img',(imgdata)=>{
+      this.backgroundIMGURL=imgdata.hdurl;
+      this.backgroundURLListener.next(this.backgroundIMGURL);
+      console.log(imgdata)
+    });
     // immediately afterwards, this get method for all the users
     this.chatOneSocket.on("get all users", (currentUser, allUsers: User[]) => {
-          // ayth2b) only continue authenticated user/send users data if token exists
+
+      // ayth2b) only continue authenticated user/send users data if token exists
         this.currentUser = currentUser;
         this.currentUserListener.next(currentUser);
         this.userId = currentUser._id;
@@ -80,6 +91,7 @@ export class MainService {
         const expiresInDuration = 3600;
         // log out when timeout occurs milliseconds, save it to be in
         this.setAuthTimer(expiresInDuration);
+
         // making a new date by adding the expires in time with the current time and then saving that data through method.
         const now = new Date();
         const expirationDate = new Date(
