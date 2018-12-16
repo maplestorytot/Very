@@ -9,7 +9,9 @@ import { Router } from "../../node_modules/@angular/router";
 import { Subject } from "../../node_modules/rxjs";
 import { Message } from "../../node_modules/@angular/compiler/src/i18n/i18n_ast";
 import { CreatorType } from "./creator.model";
+import{environment} from "../environments/environment"
 
+const BACKEND_URL=environment.serverUrl;
 // keep here because could make more than 1 service
 @Injectable({
   providedIn: "root"
@@ -18,7 +20,7 @@ export class MainService {
   private backgroundIMGURL:string;
   private currentUser: CreatorType;
   private tokenTimer:any;
-  private chatOneSocket = io.connect("http://localhost:3000/");
+  private chatOneSocket = io.connect(BACKEND_URL);
   // if client is authenticated: to know if should display things
   private isAuthenticated = false;
   // used when opening chats will send the user id
@@ -177,7 +179,7 @@ export class MainService {
     };
     console.log(signUpUser);
     this.http
-      .post("http://localhost:3000/api/user/signup", signUpUser)
+      .post(BACKEND_URL+"api/user/signup", signUpUser)
       .subscribe(
         () => {
           this.router.navigate(["/"]);

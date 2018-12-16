@@ -1,0 +1,7 @@
+{
+  "env":{
+    "MONGO_ATLAS_PW":"yKoO03VrsDCfB1Ym",
+    "SENDGRID_USERNAME":"ryanchang72@outlook.com",
+    "SENDGRID_API_KEY":"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"
+  }
+}

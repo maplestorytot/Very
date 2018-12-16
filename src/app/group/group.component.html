@@ -1,21 +1,14 @@
-<h2>Groups!</h2>
-
-
-<ul >
+<div>
+  <ul >
   <li>
-    <mat-card>
-      <img src="https://lolstatic-a.akamaihd.net/frontpage/apps/prod/LolGameInfo-Harbinger/en_US/8588e206d560a23f4d6dd0faab1663e13e84e21d/assets/assets/images/gi-landing-top.jpg"
-        alt="group A">
-      <br>
+    <mat-card id='group1'>
       <button mat-stroked-button (click)='onJoinGroupA(0)'>Join Group A</button>
 
     </mat-card>
   </li>
   <span class='divider'></span>
   <li>
-    <mat-card>
-      <img src="http://speeli.com/question/2218/2016-07-08_812maplestory-win-cover-front-76248.jpg" alt="group A">
-      <br>
+    <mat-card id='group2'>
       <button mat-stroked-button (click)='onJoinGroupB(1)'>Join Group B</button>
 
     </mat-card>
@@ -23,14 +16,14 @@
   <span class='divider'></span>
 
   <li>
-    <mat-card>
-      <img src="https://lolstatic-a.akamaihd.net/frontpage/apps/prod/LolGameInfo-Harbinger/en_US/8588e206d560a23f4d6dd0faab1663e13e84e21d/assets/assets/images/gi-landing-top.jpg"
-        alt="group A">
-      <br>
+    <mat-card id='group3'>
+
       <button mat-stroked-button (click)='onJoinGroupC(2)'>Join Group C</button>
 
     </mat-card>
   </li>
 </ul>
+</div>
+
 <router-outlet name="chat"></router-outlet>
 <router-outlet name="listOfUsers"></router-outlet>

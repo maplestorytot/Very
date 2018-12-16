@@ -10,6 +10,8 @@ const socket = require("socket.io");
 const debug = require("debug")("node-angular");
 const http = require("http");
 const bycrpt = require("bcryptjs"); //npm install --save bcryptjs
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 //socket io auth
 const socketAuth = require("socketio-auth");
@@ -24,7 +26,7 @@ const SingleChat = require("./models/singleChat.model");
 //yKoO03VrsDCfB1Ym
 mongoose
   .connect(
-    "mongodb+srv://ryanchang:yKoO03VrsDCfB1Ym@mercy-ot4et.mongodb.net/test?retryWrites=true"
+    "mongodb+srv://ryanchang:"+process.env.MONGO_ATLAS_PW+"@mercy-ot4et.mongodb.net/test?retryWrites=true"
   )
   .then(() => {
     console.log("connected to database");
@@ -93,7 +95,7 @@ server.listen(port);
 
 app.use((req, res, next) => {
   //allows data no matter what domain it comes from
-  res.append("Access-Control-Allow-Origin", "http://localhost:4200");
+  res.append("Access-Control-Allow-Origin","*");
   //can allow these extra headers
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -152,6 +154,18 @@ app.use(
                   result: result
                 });
 
+                //email verificaiton with sendgrid
+                const msg = {
+                  to: user.username,
+                  from: 'maplestorytot@gmail.com',
+                  subject: 'Veery Sign Up Verification',
+                  text: 'Thank you for join very!',
+                  html: '<strong>Feel free to start chatting it up with your friends!</strong>',
+                };
+                sgMail.send(msg);
+
+
+
                 console.log("new user created: " + user);
               })
               .catch(err => {
@@ -173,6 +187,7 @@ app.use(
 const io = socket.listen(server);
 
 function authenticate(socket, data, callback) {
+
   var username = data.username;
   var password = data.password;
 

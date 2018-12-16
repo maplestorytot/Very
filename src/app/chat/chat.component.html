@@ -3,7 +3,7 @@
 <body>
 
 
-    <div id="main">
+    <div id="main"  >
 
         <div id="chaters" *ngFor='let singleChat of singleChat'>
         <div id="chatButtons">
@@ -64,7 +64,7 @@
 
 
 
-
+        <br>
   <form *ngIf='putInUser==false' (submit)='onLoginUser(loginForm)' #loginForm='ngForm'>
     <input type="text" placeholder="What is your name? " name="username" ngModel #username="ngModel" required minlength="3">
     <button *ngIf='putInUser==false' type='submit'>Make a name and join Group Space</button>

@@ -1,10 +1,26 @@
-img{
-  width:30%;
-  height:30%;
-}
-mat-card{
-  width:30%;
 
+mat-card{
+
+  border-style:solid;
+  border-color:black;
+}
+div{
+  width:100%;
+
+}
+li{
+  width:90%;
+  min-width: 0;
+  padding-right:5%;
+}
+#group1{
+  background-image: url("https://lolstatic-a.akamaihd.net/frontpage/apps/prod/LolGameInfo-Harbinger/en_US/8588e206d560a23f4d6dd0faab1663e13e84e21d/assets/assets/images/gi-landing-top.jpg");
+}
+#group2{
+  background-image: url("http://speeli.com/question/2218/2016-07-08_812maplestory-win-cover-front-76248.jpg");
+}
+#group3{
+  background-image: url("https://lolstatic-a.akamaihd.net/frontpage/apps/prod/LolGameInfo-Harbinger/en_US/8588e206d560a23f4d6dd0faab1663e13e84e21d/assets/assets/images/gi-landing-top.jpg");
 }
 .divider{
 
@@ -12,16 +28,17 @@ mat-card{
 
 }
 ul{
-  width:50%;
   margin:auto 0;
   align-content: center;
   display: flex;
   list-style: none;
+  padding-left:0;
 }
 button{
-  width:50%;
   text-align: left;
   opacity:1;
+  margin-bottom:0.5rem;
+  color:white;
 }
 li{
 
@@ -29,10 +46,8 @@ li{
 h2{
   color:rgba(255, 255, 255, 0.877);
 }
-mat-card{
-opacity: 0.4;
 
-}
 mat-stroked-button{
   opacity: 1;
+
 }

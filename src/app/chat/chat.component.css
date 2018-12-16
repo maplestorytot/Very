@@ -1,13 +1,34 @@
-body{
 
-}
 #secondary{
   display: flex;
   padding-right: 1rem;
 
 }
+#main{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  position:absolute;
+  left:0;
+  bottom:0;
+  min-width: 0px;
+}
+#chatButtons{
+  width:100%;
+}
+#friendName{
+  display:inline-block;
+  width:70%;
+  background-color:white;
+
+}
+#clearButton{
+  width:5%;
+  border-style: solid;
+  border-color:black;
+
+}
 #scrolling-wrapper {
-  width:30rem;
+  width:100%;
   overflow-y: scroll;
   white-space: nowrap;
   height:10rem;
@@ -29,14 +50,8 @@ ul{
 }
 
 
-#main{
-  display:flex;
-  position:absolute;
-  left:0;
-  bottom:0;
-  width:30%;
-  max-width: 30%;
-
+#chaters{
+  max-width:"100%"
 }
 
 mat-button{
@@ -51,21 +66,7 @@ button{
 .card{
   background-color:white;
 }
-#chatButtons{
-  width:31rem;
-}
-#friendName{
-  display:inline-block;
-  width:80%;
-  background-color:white;
 
-}
-#clearButton{
-  width:5%;
-  border-style: solid;
-  border-color:black;
-
-}
 #messageContent{
   height: 1rem;
   padding: 0;
