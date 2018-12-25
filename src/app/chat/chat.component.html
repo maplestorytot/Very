@@ -1,114 +1,147 @@
+<!--Desktop Single Chat-->
 
+<div id="main">
+  <div  [ngClass]="{'mobileChaters':isMobile,'desktopChaters':!isMobile}"  *ngFor="let singleChat of singleChat">
+    <div  [ngClass]="{'mobileChatButtons':isMobile,'desktopChatButtons':!isMobile}">
+      <!--
+        <p *ngIf='putInUser==true&& chats.joined===true'>{{chats.groupNumber}}</p>
+      -->
+      <button mat-button color="primary" id="friendName">
+        {{ singleChat.friendObj.firstName }} {{ singleChat.friendObj.lastName }}
+      </button>
+      <button
+        id="clearButton"
+        color="warn"
+        mat-raised-button
+        (click)="clearChats(singleChat)"
+      >
+        X
+      </button>
+    </div>
 
-<body>
+    <div [ngClass]="{'mobileSecondary':isMobile,'desktopSecondary':!isMobile}">
+      <form
+        *ngIf="userIsAuthenticated == true"
+        (submit)="onSendSingleMessage(singleForm, singleChat)"
+        #singleForm="ngForm"
+      >
+        <div  [ngClass]="{'mobileScrollerWrapper':isMobile,'desktopScrollerWrapper':!isMobile}"
+          #scrollMe
+          [scrollTop]="scrollMe.scrollHeight"
+        >
+          <ul *ngFor="let messages of singleChat.messages">
+            <li
+              class="userCard"
+              *ngIf="messages.creator.firstName == currentUser.firstName"
+            >
+              <mat-card-title *ngIf="messages.creator">
+                {{ messages.creator.firstName }} {{ messages.creator.lastName }}
+              </mat-card-title>
+              <mat-card-content id="messageContent">
+                {{ messages.content }}
+              </mat-card-content>
+            </li>
 
-
-    <div id="main"  >
-
-        <div id="chaters" *ngFor='let singleChat of singleChat'>
-        <div id="chatButtons">
-          <!--<p *ngIf='putInUser==true&& chats.joined===true'>{{chats.groupNumber}}</p>-->
-        <button mat-button color="primary"  id='friendName'>{{singleChat.friendObj.firstName}} {{singleChat.friendObj.lastName}}</button>
-        <button id='clearButton' color='warn' mat-raised-button (click)="clearChats(singleChat)">X</button>
+            <li
+              class="friendCard"
+              *ngIf="messages.creator.firstName != currentUser.firstName"
+            >
+              <mat-card-title *ngIf="messages.creator">
+                {{ messages.creator.firstName }} {{ messages.creator.lastName }}
+              </mat-card-title>
+              <mat-card-content id="messageContent">
+                {{ messages.content }}
+              </mat-card-content>
+            </li>
+          </ul>
+          <span class="divider"> </span>
         </div>
+        <div id="bottomBar">
+          <textarea
+            matInput
+            cols="30"
+            rows="2"
+            name="textIn"
+            ngModel
+            #textIn="ngModel"
+            required
+            (keyup.enter)="onSendSingleMessage(singleForm, singleChat)"
+          ></textarea>
 
-        <div id="secondary">
-
-        <form *ngIf='userIsAuthenticated==true' (submit)="onSendSingleMessage(singleForm,singleChat)" #singleForm='ngForm'>
-
-          <div id="scrolling-wrapper" #scrollMe [scrollTop]="scrollMe.scrollHeight">
-              <ul  *ngFor="let messages of singleChat.messages"   >
-                <li class='userCard' *ngIf='messages.creator.firstName==currentUser.firstName'>
-                <mat-card-title  *ngIf='messages.creator'>
-                  {{messages.creator.firstName}}
-                  {{messages.creator.lastName}}
-                </mat-card-title>
-                <mat-card-content id='messageContent'>
-                  {{messages.content}}
-                </mat-card-content>
-                </li>
-
-                <li class='friendCard' *ngIf='messages.creator.firstName!=currentUser.firstName'>
-                    <mat-card-title  *ngIf='messages.creator'>
-                      {{messages.creator.firstName}}
-                      {{messages.creator.lastName}}
-                    </mat-card-title>
-                    <mat-card-content  id='messageContent'>
-                      {{messages.content}}
-                    </mat-card-content>
-                    </li>
-
-
-              </ul><span class='divider'> </span>
-              <textarea matInput cols="30" rows="2" name="textIn" ngModel #textIn="ngModel" required  (keyup.enter)="onSendSingleMessage(singleForm,singleChat)"></textarea>
-
-              <br>
-              <button mat-button color="accent" type="submit">submit</button>
-              </div>
-
-        </form>
-
-
+          <button id="submit" mat-button type="submit">submit</button>
         </div>
-        </div>
-        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--Desktop Group Chat-->
+<!--
 
 
 
+<br />
+<form
+  *ngIf="putInUser == false"
+  (submit)="onLoginUser(loginForm)"
+  #loginForm="ngForm"
+>
+  <input
+    type="text"
+    placeholder="What is your name? "
+    name="username"
+    ngModel
+    #username="ngModel"
+    required
+    minlength="3"
+  />
+  <button *ngIf="putInUser == false" type="submit">
+    Make a name and join Group Space
+  </button>
+</form>
 
+<div
+  id="main"
+  *ngIf="userIsAuthenticated == true && groupAuthenticated == true"
+>
+  <span class="divider"> </span>
 
+  <div id="secondary" *ngFor="let chats of chatGroups">
+    <p *ngIf="userIsAuthenticated == true && chats.joined === true">
+      {{ chats.groupNumber }}
+    </p>
 
-
-
-
-
-
-
-        <br>
-  <form *ngIf='putInUser==false' (submit)='onLoginUser(loginForm)' #loginForm='ngForm'>
-    <input type="text" placeholder="What is your name? " name="username" ngModel #username="ngModel" required minlength="3">
-    <button *ngIf='putInUser==false' type='submit'>Make a name and join Group Space</button>
-  </form>
-
-<div id="main" *ngIf='userIsAuthenticated==true && groupAuthenticated==true'>
-  <span class='divider'> </span>
-
-<div id="secondary" *ngFor='let chats of chatGroups'>
-
-  <p *ngIf='userIsAuthenticated==true&& chats.joined===true'>{{chats.groupNumber}}</p>
-
-  <form *ngIf='putInUser==true&& chats.joined===true' (submit)="onSendMessage(socketForm,chats.groupNumber)" #socketForm='ngForm'>
-
+    <form
+      *ngIf="putInUser == true && chats.joined === true"
+      (submit)="onSendMessage(socketForm, chats.groupNumber)"
+      #socketForm="ngForm"
+    >
       <div id="scrolling-wrapper" #scrollMe [scrollTop]="scrollMe.scrollHeight">
-
-        <ul  *ngFor="let messages of chats.messages">
-          <li class='card'>
-            <mat-card class='creator' *ngIf='messages.creator'>
-              {{messages.creator.firstName}}
-
+        <ul *ngFor="let messages of chats.messages">
+          <li class="card">
+            <mat-card class="creator" *ngIf="messages.creator">
+              {{ messages.creator.firstName }}
             </mat-card>
-            <mat-card class='content'>
-              {{messages.content}}
-
-            </mat-card>
+            <mat-card class="content"> {{ messages.content }} </mat-card>
           </li>
         </ul>
-        <textarea matInput cols="30" rows="2" name="typein" ngModel #typein="ngModel" required></textarea>
+        <textarea
+          matInput
+          cols="30"
+          rows="2"
+          name="typein"
+          ngModel
+          #typein="ngModel"
+          required
+        ></textarea>
 
-        <br>
+        <br />
         <button type="submit">submit</button>
-        </div>
-  </form>
-
-
-
+      </div>
+    </form>
+  </div>
 </div>
+-->
 
-</div>
-
-
-
-
-
-</body>
+<!--Mobile Single Chat-->
 

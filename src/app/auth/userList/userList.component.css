@@ -3,12 +3,14 @@
   position: relative;
 
 }
-.secondary{
+.mobileVersion{
+  width:100%;
+}
+.desktopVersion{
   position: fixed;
   bottom:0;
   right:0;
 }
-
 
 ul{
   margin:auto 0;

@@ -1,80 +1,112 @@
+/* Desktop View*/
 
-#secondary{
+.mobileChaters{
+  width:100%;
+}
+.desktopChaters{
+
+}
+.mobileChatButtons{
+  width:100%;
+  border-style: solid;
+  border-color: black;
+  background-color: black;
+}
+.desktopChatButtons{
+  width: 21rem;
+  border-style: solid;
+  border-color: black;
+  background-color: black;
+}
+.mobileSecondary{
+  padding-right: 1rem;
+  width:100%;
+}
+.desktopSecondary{
   display: flex;
   padding-right: 1rem;
-
 }
-#main{
-  display:grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  position:absolute;
-  left:0;
-  bottom:0;
-  min-width: 0px;
-}
-#chatButtons{
-  width:100%;
-}
-#friendName{
-  display:inline-block;
-  width:70%;
-  background-color:white;
-
-}
-#clearButton{
-  width:5%;
-  border-style: solid;
-  border-color:black;
-
-}
-#scrolling-wrapper {
-  width:100%;
+.mobileScrollerWrapper{
   overflow-y: scroll;
   white-space: nowrap;
-  height:10rem;
+  height: 10rem;
   border-style: solid;
   border-color: black;
 }
-ul{
-  margin:auto 0;
+.desktopScrollerWrapper {
+  width: 21rem;
+  overflow-y: scroll;
+  white-space: nowrap;
+  height: 10rem;
+  border-style: solid;
+  border-color: black;
+}
+ul {
+  margin: auto 0;
   align-content: center;
   display: flex;
   list-style: none;
-  padding:1rem;
+  padding: 1rem;
 }
 
-.divider{
-
+.divider {
   flex: 1 1 auto;
+}
+
+#main {
+  display: flex;
 
 }
 
-
-#chaters{
-  max-width:"100%"
-}
-
-mat-button{
-
-}
-button{
+button {
   border-style: solid;
-
 }
 
-
-.card{
-  background-color:white;
+.card {
+  background-color: white;
 }
 
-#messageContent{
+#friendName {
+  display: inline-block;
+  width: 95%;
+  background-color: white;
+  padding: 0;
+}
+#clearButton {
+  width: 5%;
+  padding: 0;
+  min-width: 0;
+  border: 0;
+}
+#messageContent {
   height: 1rem;
   padding: 0;
 }
-.userCard{
-  color:rgb(99, 170, 236);
+.userCard {
+  color: rgb(99, 170, 236);
+}
+.friendCard {
+  color: pink;
+}
+#submit {
+  padding: 0;
+  width: 23%;
+  margin: 0 auto;
+  min-width: 0;
+  border-style: none;
+  border: 0;
+}
 
+#bottomBar {
+  border-style: solid;
+  border-color: black;
+  background: pink;
 }
-.friendCard{
-  color:pink;
+textarea {
+  width: 75%;
+  border: 0;
+  border-right: solid;
 }
+
+
+

@@ -10,13 +10,15 @@ import { Subject } from "../../node_modules/rxjs";
 import { Message } from "../../node_modules/@angular/compiler/src/i18n/i18n_ast";
 import { CreatorType } from "./creator.model";
 import{environment} from "../environments/environment"
+import { ResponsiveService } from "./responsive.service";
+import { SingleChatType } from "./singleChat.model";
 
 const BACKEND_URL=environment.serverUrl;
 // keep here because could make more than 1 service
 @Injectable({
   providedIn: "root"
 })
-export class MainService {
+export class MainService{
   private backgroundIMGURL:string;
   private currentUser: CreatorType;
   private tokenTimer:any;
@@ -26,12 +28,15 @@ export class MainService {
   // used when opening chats will send the user id
   private userId: string;
   private allOfUsers: User[];
+  private singleChat:SingleChatType[]=[];
+  // used when clearing currently opened chats
+  private singleOpenedChatListener=new Subject<any>();
   // private authStatusListener = new Subject<boolean>();
   // getAuthStatusListener() {
   //   return this.authStatusListener.asObservable();
   // }
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private responsiveService:ResponsiveService) {}
   // the subject to send out the list of users to user list component
   private allOfTheUsersListener = new Subject<any>();
   private authenticatedListener = new Subject<any>();
@@ -60,10 +65,13 @@ export class MainService {
   getCurrentUser() {
     return this.currentUser;
   }
+
   // on login will take in the username and password
   onLogin(username: string, password: string) {
-    this.router.navigate(["/group"]);
-
+    this.router.navigate(["/"]);
+    if(this.responsiveService.getIsMobile){
+      this.responsiveService.onChangeState("userList");
+    }
     // create a user to send to the database for verification
     const user: User = {
       _id: null,
@@ -112,8 +120,6 @@ export class MainService {
         this.isAuthenticated = true;
         // notifying client that is autheticated
         this.authenticatedListener.next(this.isAuthenticated);
-        console.log(this.chatOneSocket)
-        console.log(this.chatOneSocket.ryantoken)
 
 
     });
@@ -183,6 +189,9 @@ export class MainService {
       .subscribe(
         () => {
           this.router.navigate(["/"]);
+          if(this.responsiveService.getIsMobile){
+            this.responsiveService.onChangeState("other");
+          }
         },
         error => {
           // this.authStatusListener.next(false);
@@ -279,7 +288,12 @@ export class MainService {
     }
   }
 
-
+  getAllOpenedChats(){
+    return this.singleOpenedChatListener.asObservable();
+  }
+  deleteAllChats(){
+    this.singleOpenedChatListener.next([]);
+  }
 
 
 

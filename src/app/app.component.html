@@ -1,13 +1,15 @@
-<div [ngStyle]="{'background-image': 'url(' + backgroundUrl + ')'}">
-
-<body >
-    <main>
-        <app-header></app-header>
-          <router-outlet></router-outlet>
-          <router-outlet name="listOfUsers"></router-outlet>
-
-        <router-outlet name="chat"></router-outlet>
-      </main>
-</body>
-
+<div [ngStyle]="{ 'background-image': 'url(' + backgroundUrl + ')' }">
+  <!--mobile1-app.component.html resizes size of screen-->
+ <div class="app-body" (window:resize)="onResize($event)">
+  <app-header></app-header>
+  <div [hidden]="!state.isOther">
+      <router-outlet ></router-outlet>
+  </div>
+  <div [hidden]="!state.isUserList">
+      <router-outlet name="listOfUsers" ></router-outlet>
+  </div>
+  <div [hidden]="!state.isChat">
+      <router-outlet name="chat" ></router-outlet>
+  </div>
+ </div>
 </div>

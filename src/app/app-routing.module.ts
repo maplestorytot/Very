@@ -27,7 +27,7 @@ const routes: Routes = [
 //   {path:"",component:GroupComponent,outlet:"group"},
 //  { path: "", component: ChatComponent,outlet:"chat"},
 //  { path: "", component: UserListComponent,outlet:"listOfUsers"}*/
-
+ 
 
 // allows use of imports  and allows one to send out exports
 @NgModule({

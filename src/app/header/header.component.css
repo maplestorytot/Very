@@ -10,6 +10,7 @@ ul{
 a{
   text-decoration: none;
   color:white;
+  padding:0;
 }
 
 /* takes all the remaining space between the elements between them*/
@@ -18,4 +19,10 @@ a{
 }
 
 ul{
+}
+button{
+  min-width:0;
+}
+mat-button{
+  min-width:0;
 }
