@@ -227,3 +227,24 @@ gzo10b) if yes, will add new msg to chat
     location: chat component
 
 
+Authentication: npm install --save jsonwebtoken
+all-->location: server.js
+ayth1) create token during authentication
+ayth2) save token within socket socket.ryantoken
+ayth2b) verify token... if the token and the request's userid the same. 
+    this is done to prevent anyone from stealing someone's userid and making another message as an imposter. This is because the token inherently stored in the server's socket will have the real userid. 
+ayth6) server decodes token and compares the user's userid with the token's decoded userid
+    ayth6a) if good then can continue with action
+    ayth6b) else ??? return u failed 
+
+
+About the JWToken: 
+contains username, userid
+-token changes everytime you log in interestingly enough
+
+
+Considerations about authentication:
+-doing it this ways doesn't allow the client side socket to keep the token in local storage.
+-more safer in my opinion because socket token only exists in server side socket
+-what happens if someone logs out. the socket still has the token encoded in it,
+maybe send a request to delete the token on log out?

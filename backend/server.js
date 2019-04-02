@@ -2,13 +2,16 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const bodyParser = require("body-parser");
-
+const jwt = require("jsonwebtoken");
+const request = require("request");
 const app = express();
 const mongoose = require("mongoose");
 const socket = require("socket.io");
 const debug = require("debug")("node-angular");
 const http = require("http");
 const bycrpt = require("bcryptjs"); //npm install --save bcryptjs
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 //socket io auth
 const socketAuth = require("socketio-auth");
@@ -23,7 +26,7 @@ const SingleChat = require("./models/singleChat.model");
 //yKoO03VrsDCfB1Ym
 mongoose
   .connect(
-    "mongodb+srv://ryanchang:yKoO03VrsDCfB1Ym@mercy-ot4et.mongodb.net/test?retryWrites=true"
+    "mongodb+srv://ryanchang:"+process.env.MONGO_ATLAS_PW+"@mercy-ot4et.mongodb.net/test?retryWrites=true"
   )
   .then(() => {
     console.log("connected to database");
@@ -92,7 +95,7 @@ server.listen(port);
 
 app.use((req, res, next) => {
   //allows data no matter what domain it comes from
-  res.append("Access-Control-Allow-Origin", "http://localhost:4200");
+  res.append("Access-Control-Allow-Origin","*");
   //can allow these extra headers
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -151,6 +154,18 @@ app.use(
                   result: result
                 });
 
+                //email verificaiton with sendgrid
+                const msg = {
+                  to: user.username,
+                  from: 'maplestorytot@gmail.com',
+                  subject: 'Veery Sign Up Verification',
+                  text: 'Thank you for join very!',
+                  html: '<strong>Feel free to start chatting it up with your friends!</strong>',
+                };
+                sgMail.send(msg);
+
+
+
                 console.log("new user created: " + user);
               })
               .catch(err => {
@@ -164,16 +179,6 @@ app.use(
           console.log("Fail Authentificaiton");
           return callback(new Error("Invalid Authentification Credentials"));
         });
-      // console.log(mySingleChat);
-      //   SingleChat.insert({messageStash:mySingleChat.messageStash,users:mySingleChat.users}).then(result=>{
-      //     res.status(201).json({
-      //       message:"chat created",
-      //       result:result
-      //   });
-      //   console.log("new chat created " + mySingleChat)
-      // }).catch(err=>{
-      //   res.status(500).json({message:'Invalid Authentification credentials!'});
-      // })
     });
   })
 );
@@ -182,6 +187,7 @@ app.use(
 const io = socket.listen(server);
 
 function authenticate(socket, data, callback) {
+
   var username = data.username;
   var password = data.password;
 
@@ -197,6 +203,19 @@ function authenticate(socket, data, callback) {
           // if password is correct, i want to note to server by console log
           if (res) {
             console.log("Authentification Valid");
+            //ayth1) create token during authentication
+            const token = jwt.sign(
+              //based on input data of your choice which will be encrypted
+              { email: user.email, userId: user._id },
+              //this is the extra piece of randomfyer to token
+              "my super duper secret code",
+              //when it should expire
+              { expiresIn: "1h" }
+            );
+            //ayth2) send token back to client by changing socket headers
+            socket.ryantoken = token;
+            //console.log(token) both are same!!
+            //console.log(socket.handshake.headers.token);
             return callback(null, bycrpt.compare(password, user.password));
           } else {
             console.log("Authentification Fail");
@@ -214,7 +233,7 @@ function authenticate(socket, data, callback) {
     });
 }
 
-//what is avaliable after authentification functions for the users
+//called after authenticate is complete : it is what is avaliable after authentification functions for the users
 function postAuthenticate(socket, data) {
   var username = data.username;
   // keeping track on the current user
@@ -230,7 +249,19 @@ function postAuthenticate(socket, data) {
         lastName: user.lastName,
         nickName: user.nickName
       };
-      socket.emit("get all users", currentUser, allUsers);
+      var imgurl
+      //ayth2b) only continue authenticated user/send users data if token exists
+      if (socket.ryantoken) {
+        //ayth2) send token back to client by changing socket headers
+
+        // since this is a callback, will send img url once completed getting img
+        getNASABackground(function(data){
+          socket.emit("get back img", data)
+        })
+
+        // nasa APOD  url included
+        socket.emit("get all users", currentUser, allUsers);
+      }
     });
 
     //gzo1. on sign in, userA socket joins own room (room + userAId)
@@ -239,6 +270,13 @@ function postAuthenticate(socket, data) {
     //  Opening 1-1 CHATS
     //  method to join a 1-1 chat
     socket.on("one to one chat", (userId, friendId) => {
+      if (
+        Boolean(checkToken(socket.ryantoken, socket.client.user._id) == false)
+      ) {
+        console.log("User authentification Error");
+        return;
+      }
+
       //1) find user
       User.findOne({ _id: userId })
         .then(_user => {
@@ -348,6 +386,13 @@ function postAuthenticate(socket, data) {
     socket.on(
       "send single message to room",
       (userId, friendId, message, chatId) => {
+        //ayth2b) verify token... if the token and the request's userid the same.
+        if (
+          Boolean(checkToken(socket.ryantoken, socket.client.user._id) == false)
+        ) {
+          console.log("User authentification Error");
+          return;
+        }
         //1) find user
         User.findOne({ _id: userId }).then(_user => {
           //check if the user exists
@@ -428,6 +473,7 @@ function postAuthenticate(socket, data) {
                 /* how it works: for memberId used to get ids of sockets connected to userA's room, then,
                  if statement filters out the ones that you aren't supposed to send to, ie not userA or userB
                  */
+
                 for (var memberId in chatRoom.adapter.rooms[
                   "room" + _friend._id
                 ].sockets) {
@@ -541,6 +587,7 @@ function postAuthenticate(socket, data) {
   });
 }
 
+// function to get nasa APOD picture for background
 function disconnect(socket) {
   console.log(socket.id + " disconnected");
 }
@@ -552,14 +599,50 @@ socketAuth(io, {
   timeout: 100000
 });
 
-function security() {
-  bycrpt.compare(password, user.password, function(err, res) {
-    // if password is correct, i want to note to server by console log
-    if (res) {
-      console.log("Authentification Valid");
-      return callback(null, bycrpt.compare(password, user.password));
-    } else {
-      console.log("Authentification Fail");
+function getNASABackground(callback) {
+  year = Math.floor(Math.random() * (2018 - 2000) + 2000);
+  month = Math.floor(Math.random() * (12 - 1) + 1);
+  day = Math.floor(Math.random() * (28 - 1) + 1);
+  if (day <= 9) {
+    day = "0" + day;
+  }
+  if (month <= 9) {
+    month = "0" + month;
+  }
+
+  date = year + "-" + month + "-" + day;
+
+  request(
+    "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&hd=true&date=" + date,
+    { json: true },
+    (err, res, body) => {
+      if (err) {
+        return console.log(err);
+      }
+      else{
+          callback(body)
+      }
     }
-  });
+  );
+
+
+}
+
+// ayth2b) verify token... if the token and the request's userid the same.
+function checkToken(_token, currentUserId) {
+  try {
+    //ayth6) server decodes token and compares the user's userid with the token's decoded userid
+    //ayth6a) if good then can continue with action
+    //ayth6b) else ??? return u failed
+    const token = _token;
+    // next will keep any fields created
+    const decodedToken = jwt.verify(token, "my super duper secret code");
+    if (currentUserId == decodedToken.userId) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    res.status(401).json({ message: "You are not authenticated!" });
+  }
 }

@@ -1,0 +1,159 @@
+body{
+
+}
+#secondary{
+  display: flex;
+  padding-right: 1rem;
+
+}
+#scrolling-wrapper {
+  width:30rem;
+  overflow-y: scroll;
+  white-space: nowrap;
+  height:10rem;
+  border-style: solid;
+  border-color: black;
+}
+ul{
+  margin:auto 0;
+  align-content: center;
+  display: flex;
+  list-style: none;
+  padding:1rem;
+}
+
+.divider{
+
+  flex: 1 1 auto;
+
+}
+
+
+#main{
+  display:flex;
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:30%;
+  max-width: 30%;
+
+}
+
+mat-button{
+
+}
+button{
+  border-style: solid;
+
+}
+
+
+.card{
+  background-color:white;
+}
+#chatButtons{
+  width:31rem;
+}
+#friendName{
+  display:inline-block;
+  width:80%;
+  background-color:white;
+
+}
+#clearButton{
+  width:5%;
+  border-style: solid;
+  border-color:black;
+
+}
+#messageContent{
+  height: 1rem;
+  padding: 0;
+}
+.userCard{
+  color:rgb(99, 170, 236);
+
+}
+.friendCard{
+  color:pink;
+}
+/*
+#secondary{
+  display: flex;
+  padding-right: 1rem;
+
+}
+#main{
+  display:flex;
+  position:absolute;
+  left:0;
+  bottom:0;
+
+}
+#chatButtons{
+  width:100%;
+}
+#friendName{
+  display:inline-block;
+  width:70%;
+  background-color:white;
+
+}
+#clearButton{
+  width:5%;
+  border-style: solid;
+  border-color:black;
+
+}
+#scrolling-wrapper {
+  width:100%;
+  overflow-y: scroll;
+  white-space: nowrap;
+  height:10rem;
+  border-style: solid;
+  border-color: black;
+}
+ul{
+  margin:auto 0;
+  align-content: center;
+  display: flex;
+  list-style: none;
+  padding:1rem;
+}
+
+.divider{
+
+  flex: 1 1 auto;
+
+}
+
+
+#chaters{
+  max-width:"100%"
+}
+
+mat-button{
+
+}
+button{
+  border-style: solid;
+
+}
+
+
+.card{
+  background-color:white;
+}
+
+#messageContent{
+  height: 1rem;
+  padding: 0;
+}
+.userCard{
+  color:rgb(99, 170, 236);
+
+}
+.friendCard{
+  color:pink;
+}
+*/

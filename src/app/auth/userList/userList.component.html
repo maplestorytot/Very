@@ -2,35 +2,33 @@
 
 <div class='main'></div>
 <!--Move everything to the right of the page-->
-  <div class='secondary'>
-    <ul *ngFor="let users of allUserList">
-  <li class='card'>
+    <div [ngClass]="{'mobileVersion':isMobile,'desktopVersion':!isMobile}">
+        <ul *ngFor="let users of allUserList">
+      <li>
+            <!--  //psts1. in userList, person clicks on user, sending the userId to mainService-->
 
-    <button  mat-button (click)="onOpenSingleChat(users._id)" >
+        <a mat-button color="primary" [routerLink]="['/profile',users._id]" (click)="onOpenProfile()">P</a>
+        <!--<a id="videoButton"  mat-button color='accent' (click)="onOpenVideoCall(users._id)" >Call</a>-->
+        <button id="nameButton"  mat-button color='accent' background-color='primary' (click)="onOpenSingleChat(users._id)" >
 
-       {{users.firstName}} {{users.lastName}}
+          {{users.firstName}} {{users.lastName}}
 
-    </button>
+        </button>
 
-  </li>
-</ul>
 
-</div>
+      </li>
+    </ul>
 
-<!--
+      </div>
 
-  <div class='main'></div>
-    <div class='secondary'>
-      <ul *ngFor="let users of allUserList">
-    <li class='card'>
-
-      <button mat-button type="submit">
-        {{users.firstName}} {{users.lastName}}
-
-      </button>
-
+<!--<div class='videos'>
+  <ul *ngFor="let videocalls of currentVideoCalls">
+    <li>
+      <video width="320" height="240" autoplay="true" border-style="solid">
+      </video>
     </li>
-  </ul>
 
-  </div>
-  </form>-->
+</ul>
+</div>
+-->
+

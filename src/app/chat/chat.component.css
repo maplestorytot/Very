@@ -1,50 +1,112 @@
-body{
+/* Desktop View*/
+
+.mobileChaters{
+  width:100%;
+}
+.desktopChaters{
 
 }
-#secondary{
+.mobileChatButtons{
+  width:100%;
+  border-style: solid;
+  border-color: black;
+  background-color: black;
+}
+.desktopChatButtons{
+  width: 21rem;
+  border-style: solid;
+  border-color: black;
+  background-color: black;
+}
+.mobileSecondary{
+  padding-right: 1rem;
+  width:100%;
+}
+.desktopSecondary{
   display: flex;
-  padding-right: 10rem;
+  padding-right: 1rem;
 }
-#scrolling-wrapper {
+.mobileScrollerWrapper{
   overflow-y: scroll;
-
-  overflow-x: hidden;
   white-space: nowrap;
-  height:10rem;
+  height: 10rem;
+  border-style: solid;
+  border-color: black;
 }
-ul{
-  margin:auto 0;
+.desktopScrollerWrapper {
+  width: 21rem;
+  overflow-y: scroll;
+  white-space: nowrap;
+  height: 10rem;
+  border-style: solid;
+  border-color: black;
+}
+ul {
+  margin: auto 0;
   align-content: center;
   display: flex;
   list-style: none;
-
+  padding: 1rem;
 }
-li{
-}
-.divider{
 
+.divider {
   flex: 1 1 auto;
+}
+
+#main {
+  display: flex;
 
 }
 
+button {
+  border-style: solid;
+}
 
-#main{
-  display:flex;
-  position:absolute;
-  left:0;
-  bottom:0;
-  width:30%;
-  max-width: 30%;
+.card {
+  background-color: white;
+}
 
+#friendName {
+  display: inline-block;
+  width: 95%;
+  background-color: white;
+  padding: 0;
 }
-#friendName{
-  display:inline-block;
-  width:50%;
+#clearButton {
+  width: 5%;
+  padding: 0;
+  min-width: 0;
+  border: 0;
 }
-.clearButton{
-  width:50%;
+#messageContent {
+  height: 1rem;
+  padding: 0;
+}
+.userCard {
+  color: rgb(99, 170, 236);
+}
+.friendCard {
+  color: pink;
+}
+#submit {
+  padding: 0;
+  width: 23%;
+  margin: 0 auto;
+  min-width: 0;
+  border-style: none;
+  border: 0;
+}
 
+#bottomBar {
+  border-style: solid;
+  border-color: black;
+  background: pink;
 }
-#chaters{
-  max-width: 100%;
+textarea {
+  width: 75%;
+  border: 0;
+  border-right: solid;
 }
+
+
+

@@ -3,22 +3,24 @@
   position: relative;
 
 }
-.secondary{
+.mobileVersion{
+  width:100%;
+}
+.desktopVersion{
   position: fixed;
   bottom:0;
   right:0;
 }
 
-
 ul{
   margin:auto 0;
-  align-content: center;
   display: flex;
   list-style: none;
-  width:100%;
+  padding:0;
 }
 
-button{
-  width:50%;
-  text-align: left;
+
+#nameButton{
+  width: 10rem;
+  margin-top: 0.5rem;
 }

@@ -7,6 +7,8 @@ import { MainService } from "../main.service";
 import { SingleChatType } from "../singleChat.model";
 import { invalid } from "../../../node_modules/@angular/compiler/src/render3/view/util";
 import { CreatorType } from "../creator.model";
+import { ResponsiveService } from "../responsive.service";
+import { Router } from "../../../node_modules/@angular/router";
 
 @Component({
   selector: "app-chat",
@@ -40,22 +42,25 @@ export class ChatComponent implements OnInit, OnDestroy {
   // currentMsgNotif: MessageType[] = [];
 
   putInUser = false;
+  isMobile:boolean;
   private messagesSub: Subscription;
   private messagesSingleSub:Subscription;
-
+  private changeOpenedChatsSub:Subscription;
   private notificationSub: Subscription;
   private chatNumberSub: Subscription;
   private friendOpenChat:Subscription;
+  private resizeSub:Subscription;
   private username: string;
   private currentUser:CreatorType;
-
+  groupAuthenticated=false;
   // to know when to display chats if authenticated... used in the html
   userIsAuthenticated=false;
   private authListenerSubs:Subscription;
   // injecting the authentification service
-  constructor(private mainService:MainService) {}
+  constructor(private mainService:MainService, private responsiveService:ResponsiveService, private router:Router) {}
   // put the receive messages in here so that it doesn't create more than one instance of the messages
   ngOnInit() {
+
     this.messagesSub = this.mainService
       .receiveMessageOne()
       .subscribe(newMsg => {
@@ -74,8 +79,13 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.userIsAuthenticated = this.mainService.getIsAuth();
     this.authListenerSubs=this.mainService.getAuthenticatedListener().subscribe(isAuthenticated=>{
-      this.currentUser=this.mainService.getCurrentUser();
-      this.userIsAuthenticated=isAuthenticated;
+        this.currentUser=this.mainService.getCurrentUser();
+        this.userIsAuthenticated=isAuthenticated;
+        if(Boolean(isAuthenticated)===false){
+           this.singleChat=[];
+
+        }
+
     });
 
     this.messagesSingleSub=this.mainService.receiveMessageSingle().subscribe(messageInfo=>{
@@ -148,7 +158,24 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     });
 
-    }
+    // when resizing to mobile view, delete all chats to restart.
+    this.resizeSub=this.responsiveService.getIsMobile().subscribe(_isMobile=>{
+      this.isMobile=_isMobile;
+      if(_isMobile){
+        this.singleChat=[];
+      }
+    });
+
+    // used to change open chats list, usually for deleting all opened chats
+    this.changeOpenedChatsSub=this.mainService.getAllOpenedChats().subscribe(_openedChats=>{
+      if(_openedChats){
+        this.singleChat=_openedChats;
+      }
+    });
+
+    // when created check if mobile
+    this.responsiveService.checkMobile();
+}
 
 
   //  gzo6a. userB sends a message
@@ -166,9 +193,17 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
 
-  clearChats(index){
-    this.singleChat.splice(index,1);
-    console.log(this.singleChat.length)
+  clearChats(chatToDelete){
+    var i=0;
+    for( i;i<this.singleChat.length;i++){
+      if(this.singleChat[i]===chatToDelete){
+     this.singleChat.splice(i,1);
+      }
+    }
+    this.router.navigate(["/"]);
+    if(this.responsiveService.getCheckIsMobile()){
+      this.responsiveService.onChangeState("userList");
+    }
   }
 
 
@@ -188,6 +223,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (form.invalid) {
       return;
     }
+    this.groupAuthenticated=true;
     this.username = form.value.username;
     this.putInUser = true;
     const notification: MessageType = {
@@ -232,6 +268,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messagesSub.unsubscribe();
     this.notificationSub.unsubscribe();
     this.chatNumberSub.unsubscribe();
+    this.resizeSub.unsubscribe();
   }
 
 }

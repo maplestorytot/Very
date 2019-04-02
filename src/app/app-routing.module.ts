@@ -9,6 +9,7 @@ import { LoginComponent } from './auth/login/login.component';
 import{SignupComponent} from'./auth/signup/signup.component';
 import { GroupComponent } from './group/group.component';
 import { UserListComponent } from "./auth/userList/userList.component";
+import { ProfileComponent } from "./profile/profile.component";
 
 // routes are objects of type routes that allow url to have components to be presented
 const routes: Routes = [
@@ -18,14 +19,15 @@ const routes: Routes = [
   {path:"group",component:GroupComponent},
   // these componenets can be access through routerLink in group.component.html as an add on
  { path: "", component: ChatComponent,outlet:"chat"},
- { path: "", component: UserListComponent,outlet:"listOfUsers"}
+ { path: "", component: UserListComponent,outlet:"listOfUsers"},
+ { path: "profile/:userId", component: ProfileComponent}
  ];
 //  { path: "", component: LoginComponent },
 //   { path: "signup", component: SignupComponent},
 //   {path:"",component:GroupComponent,outlet:"group"},
 //  { path: "", component: ChatComponent,outlet:"chat"},
 //  { path: "", component: UserListComponent,outlet:"listOfUsers"}*/
-
+ 
 
 // allows use of imports  and allows one to send out exports
 @NgModule({
