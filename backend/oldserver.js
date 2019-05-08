@@ -14,7 +14,7 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 //socket io auth
-// const socketAuth = require("socketio-auth");
+const socketAuth = require("socketio-auth");
  
 //MODELS
 const User = require("./models/user.model");
@@ -186,110 +186,96 @@ app.use(
 // creating a socket io here, it is a server type
 const io = socket.listen(server);
 
-// io.use(function(socket, next){
-//   console.log( socket.handshake.query.token)
-//   if (socket.handshake.query && socket.handshake.query.token){
-//     jwt.verify(socket.handshake.query.token, 'SECRET_KEY', function(err, decoded) {
-//       if(err) {
-//         console.log('error')
-//         /*return*/next(new Error('Authentication error'));
-//       }
-//       socket.decoded = decoded;
-//       next();
-//     });
-//   } else {
-//       next(new Error('Authentication error'));
-//   }    
-// })
-io.on('connection', function(socket) {
-    // Connection now authenticated to receive further events
-    socket.on('authentication',function(data,callback){
-      //check token here
-      var username = data.username;
-      var password = data.password;
-    
-      User.findOne({ username: username })
-        .then(
-          user => {
-            //check if the user exists
-            if (!user) {
-              console.log("user not found");
-              return callback(new Error("User not found"));
-            }
-            bycrpt.compare(password, user.password, function(err, res) {
-              // if password is correct, i want to note to server by console log
-              if (res) {
-                console.log("Authentification Valid");
-                //ayth1) create token during authentication
-                const token = jwt.sign(
-                  //based on input data of your choice which will be encrypted
-                  { email: user.email, userId: user._id },
-                  //this is the extra piece of randomfyer to token
-                  "my super duper secret code",
-                  //when it should expire
-                  { expiresIn: "1h" }
-                );
-                //ayth2) send token back to client by changing socket headers
-                socket.handshake.query.token = token;
-                //console.log(token) both are same!!
-                //console.log(socket.handshake.headers.token);
-                return callback(socket.handshake.query.token,bycrpt.compare(password, user.password));
-              } else {
-                console.log("Authentification Fail");
-              }
-            });
-            postAuthenticate(socket,data.username)
+function authenticate(socket, data, callback) {
 
- 
+  var username = data.username;
+  var password = data.password;
+
+  User.findOne({ username: username })
+    .then(
+      user => {
+        //check if the user exists
+        if (!user) {
+          console.log("user not found");
+          return callback(new Error("User not found"));
+        }
+        bycrpt.compare(password, user.password, function(err, res) {
+          // if password is correct, i want to note to server by console log
+          if (res) {
+            console.log("Authentification Valid");
+            //ayth1) create token during authentication
+            const token = jwt.sign(
+              //based on input data of your choice which will be encrypted
+              { email: user.email, userId: user._id },
+              //this is the extra piece of randomfyer to token
+              "my super duper secret code",
+              //when it should expire
+              { expiresIn: "1h" }
+            );
+            //ayth2) send token back to client by changing socket headers
+            socket.ryantoken = token;
+            //console.log(token) both are same!!
+            //console.log(socket.handshake.headers.token);
+            return callback(null, bycrpt.compare(password, user.password));
+          } else {
+            console.log("Authentification Fail");
           }
-        )
-        .catch(err => {
-          console.log("Fail Authentificaiton");
-          return callback(new Error("Invalid Authentification Credentials"));
         });
 
-
-    })
-    socket.on("tokenAuthentication",function(_token,callback){
-      try {
-        //ayth6) server decodes token and compares the user's userid with the token's decoded userid
-        //ayth6a) if good then can continue with action
-        //ayth6b) else ??? return u failed
-        const token = _token;
-        console.log(_token)
-
-        // next will keep any fields created
-        const decodedToken = jwt.verify(token, "my super duper secret code");
-        if (decodedToken.userId) {
-          User.findOne({_id:decodedToken.userId}).then((user)=>{
-            if(!user){
-              callback(false)
-            }
-            postAuthenticate(socket,user.username)
-            callback(true)
-          })
-        } else {
-          callback(false)
-
-        }
-      } catch (error) {
-        console.log(error)
-        callback(false)
-
+        // returns true or false checking if the user's password is correct
+        // return callback(null,bycrpt.compare(password,user.password));
       }
+      //catch any errors
+    )
+    .catch(err => {
+      console.log("Fail Authentificaiton");
+      return callback(new Error("Invalid Authentification Credentials"));
+    });
+}
 
+//called after authenticate is complete : it is what is avaliable after authentification functions for the users
+function postAuthenticate(socket, data) {
+  var username = data.username;
+  // keeping track on the current user
+  User.findOne({ username: username }).then(user => {
+    socket.client.user = user;
 
-    })
+    // console.log(socket.client.user)
+    // emitting a list of all the users so that client can display these users
+    User.find().then(allUsers => {
+      const currentUser = {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        nickName: user.nickName
+      };
+      var imgurl
+      //ayth2b) only continue authenticated user/send users data if token exists
+      if (socket.ryantoken) {
+        //ayth2) send token back to client by changing socket headers
+
+        // since this is a callback, will send img url once completed getting img
+        getNASABackground(function(data){
+          socket.emit("get back img", data)
+        })
+
+        // nasa APOD  url included
+        socket.emit("get all users", currentUser, allUsers);
+      }
+    });
+
+    //gzo1. on sign in, userA socket joins own room (room + userAId)
+    socket.join("room" + user._id);
 
     //  Opening 1-1 CHATS
     //  method to join a 1-1 chat
     socket.on("one to one chat", (userId, friendId) => {
-      // if (
-      //   Boolean(checkToken(socket.handshake.query.token, socket.client.user._id) == false)
-      // ) {
-      //   console.log("User authentification Error");
-      //   return;
-      // }
+      if (
+        Boolean(checkToken(socket.ryantoken, socket.client.user._id) == false)
+      ) {
+        console.log("User authentification Error");
+        return;
+      }
 
       //1) find user
       User.findOne({ _id: userId })
@@ -372,122 +358,144 @@ io.on('connection', function(socket) {
         });
     });
 
-
+    function connectAndSendChat(socket, friendId, _friend, _user, _chat) {
+      //gzo3. Server: socket on catches ... adds userB socket to (room + userAId)
+      socket.join("room" + friendId);
+      //gzo4. server sends chat info to userB
+      // note: only sending parts of the users for security
+      io.to(`${socket.client.id}`).emit(
+        "friend join single chat",
+        {
+          _id: _friend._id,
+          firstName: _friend.firstName,
+          lastName: _friend.lastName,
+          nickName: _friend.nickName
+        },
+        {
+          _id: _user._id,
+          firstName: _user.firstName,
+          lastName: _user.lastName,
+          nickName: _user.nickName
+        },
+        _chat._id,
+        _chat.messageStash
+      );
+    }
 
     //gzo7. server: socket on catches
     socket.on(
-        "send single message to room",
-        (userId, friendId, message, chatId) => {
-          //ayth2b) verify token... if the token and the request's userid the same.
-          if (
-            Boolean(checkToken(socket.handshake.query.token, socket.client.user._id) == false)
-          ) {
-            console.log("User authentification Error");
-            return;
+      "send single message to room",
+      (userId, friendId, message, chatId) => {
+        //ayth2b) verify token... if the token and the request's userid the same.
+        if (
+          Boolean(checkToken(socket.ryantoken, socket.client.user._id) == false)
+        ) {
+          console.log("User authentification Error");
+          return;
+        }
+        //1) find user
+        User.findOne({ _id: userId }).then(_user => {
+          //check if the user exists
+          if (!_user) {
+            console.log("user not found");
+            return callback(new Error("User not found"));
           }
-          //1) find user
-          User.findOne({ _id: userId }).then(_user => {
+
+          //2) FIND IF FRIEND EXISTS
+          User.findOne({ _id: friendId }).then(_friend => {
             //check if the user exists
-            if (!_user) {
+            if (!_friend) {
               console.log("user not found");
               return callback(new Error("User not found"));
             }
+            //friend or user first
+            var chatSearchName;
 
-            //2) FIND IF FRIEND EXISTS
-            User.findOne({ _id: friendId }).then(_friend => {
-              //check if the user exists
-              if (!_friend) {
-                console.log("user not found");
-                return callback(new Error("User not found"));
-              }
-              //friend or user first
-              var chatSearchName;
+            //2b) Querying or creating a single chat will be based on who's id is greater so that only one chat is created
+            //between users
+            if (friendId > userId) {
+              chatSearchName = [_friend, _user];
+            } else {
+              chatSearchName = [_user, _friend];
+            }
 
-              //2b) Querying or creating a single chat will be based on who's id is greater so that only one chat is created
-              //between users
-              if (friendId > userId) {
-                chatSearchName = [_friend, _user];
-              } else {
-                chatSearchName = [_user, _friend];
-              }
+            //search using chatId the chat and store into database
 
-              //search using chatId the chat and store into database
-
-              //3) find a single chat where the user's array list is made of the user and friend
-              SingleChat.findOne({ users: chatSearchName }).then(_chat => {
-                //if no error, check if chat exists
-                if (!_chat) {
-                  //if it doesn't exist, create a new chat
-                  const newSingleChat = new SingleChat({
-                    messageStash: [
-                      {
-                        creator: _user,
-                        content: "We have just began the best friendship ever!",
-                        time: new Date()
-                      }
-                    ],
-                    users: chatSearchName
-                  });
-                  //4)save new chat
-                  newSingleChat
-                    .save()
-                    .then(res => {
-                      console.log(res);
-                    })
-                    .catch(err => {
-                      console.log(err.message);
-                    });
-                }
-                //5) unless the chat already exists then, open up the socket so that the users may talk
-                else {
-                  const newMessage = {
-                    creator: {
-                      _id: _user._id,
-                      firstName: _user.firstName,
-                      lastName: _user.lastName,
-                      nickName: _user.nickName
-                    },
-                    content: message.content,
-                    time: new Date()
-                  };
-                  _chat.messageStash.push(newMessage);
-                  //gzo8. server saves msg to database.
-                  _chat
-                    .save()
-                    .then(result => {
-                      // console.log(result);
-                    })
-                    .catch(err => {
-                      console.log(err.message);
-                    });
-
-                  //gzo9a.finds socket that matches userA socket id with userA id within (room + userAId)
-                  /* how it works: for memberId used to get ids of sockets connected to userA's room, then,
-                    if statement filters out the ones that you aren't supposed to send to, ie not userA or userB
-                    */
-
-                  for (var memberId in chatRoom.adapter.rooms[
-                    "room" + _friend._id
-                  ].sockets) {
-                    if (
-                      memberId == socket.client.id ||
-                      _friend.id == io.clients().sockets[memberId].client.user._id
-                    ) {
-                      //gzo9b. server send msg to userA, userB socket directly by just memberid
-                      io.to(`${memberId}`).emit(
-                        "single chat send message",
-                        _friend._id,
-                        _user._id,
-                        _chat._id,
-                        newMessage
-                      );
+            //3) find a single chat where the user's array list is made of the user and friend
+            SingleChat.findOne({ users: chatSearchName }).then(_chat => {
+              //if no error, check if chat exists
+              if (!_chat) {
+                //if it doesn't exist, create a new chat
+                const newSingleChat = new SingleChat({
+                  messageStash: [
+                    {
+                      creator: _user,
+                      content: "We have just began the best friendship ever!",
+                      time: new Date()
                     }
+                  ],
+                  users: chatSearchName
+                });
+                //4)save new chat
+                newSingleChat
+                  .save()
+                  .then(res => {
+                    console.log(res);
+                  })
+                  .catch(err => {
+                    console.log(err.message);
+                  });
+              }
+              //5) unless the chat already exists then, open up the socket so that the users may talk
+              else {
+                const newMessage = {
+                  creator: {
+                    _id: _user._id,
+                    firstName: _user.firstName,
+                    lastName: _user.lastName,
+                    nickName: _user.nickName
+                  },
+                  content: message.content,
+                  time: new Date()
+                };
+                _chat.messageStash.push(newMessage);
+                //gzo8. server saves msg to database.
+                _chat
+                  .save()
+                  .then(result => {
+                    // console.log(result);
+                  })
+                  .catch(err => {
+                    console.log(err.message);
+                  });
+
+                //gzo9a.finds socket that matches userA socket id with userA id within (room + userAId)
+                /* how it works: for memberId used to get ids of sockets connected to userA's room, then,
+                 if statement filters out the ones that you aren't supposed to send to, ie not userA or userB
+                 */
+
+                for (var memberId in chatRoom.adapter.rooms[
+                  "room" + _friend._id
+                ].sockets) {
+                  if (
+                    memberId == socket.client.id ||
+                    _friend.id == io.clients().sockets[memberId].client.user._id
+                  ) {
+                    //gzo9b. server send msg to userA, userB socket directly by just memberid
+                    io.to(`${memberId}`).emit(
+                      "single chat send message",
+                      _friend._id,
+                      _user._id,
+                      _chat._id,
+                      newMessage
+                    );
                   }
                 }
-              });
+              }
             });
           });
-        }
+        });
+      }
     );
 
     //GROUP CHAT LOGIC:
@@ -539,85 +547,57 @@ io.on('connection', function(socket) {
       console.log("Authorized user joined room " + groupChatName);
       // adding the client to the room if not already in it
 
-      io.join("room" + groupChatName);
+      socket.join("room" + groupChatName);
 
       // // chatRoom emits to roomOne clients an event
       // // event: new user connected: passes name as a parameter
       chatRoom
         .to("room" + groupChatName)
         .emit("new user connected one", name, groupChatName);
-      });
-      //sending a chat message
-      socket.on("send chat message one", (msg, groupChatName) => {
-        // //add to db message
-        // Group.findOne({groupName:groupChatName}).then(groupChat=>{
-        //   //check if group chat exists
-        //   if(!groupChat){
-        //     console.log('group chat not found')
-        //     return callback(new Error ("group chat not found"));
+    });
+    //sending a chat message
+    socket.on("send chat message one", (msg, groupChatName) => {
+      // //add to db message
+      // Group.findOne({groupName:groupChatName}).then(groupChat=>{
+      //   //check if group chat exists
+      //   if(!groupChat){
+      //     console.log('group chat not found')
+      //     return callback(new Error ("group chat not found"));
 
-        //   }
-        //   const newMessage=new ChatMessage({creator:socket.client.user,
-        //     content:msg,
-        //     time:new Date()
-        //   })
+      //   }
+      //   const newMessage=new ChatMessage({creator:socket.client.user,
+      //     content:msg,
+      //     time:new Date()
+      //   })
 
-        //   groupChat.messageStash=groupChat.messageStash+newMessage;
+      //   groupChat.messageStash=groupChat.messageStash+newMessage;
 
-        // })
-        //if it does exist, then just save a message
+      // })
+      //if it does exist, then just save a message
 
-        //sends meesage to all those connected to roomOne
-        chatRoom
-          .to("room" + groupChatName)
-          .emit("receive message one", msg, groupChatName);
-      });
-
-      socket.on("disconnect", function() {
-        console.log("user disconnected");
-      });
-});
-
-
-
-const postAuthenticate = function(socket,data){
-  var username = data;
-  // keeping track on the current user
-  User.findOne({ username: username }).then(user => {
-    socket.client.user = user;
-
-    // console.log(socket.client.user)
-    // emitting a list of all the users so that client can display these users
-    User.find().then(allUsers => {
-      const currentUser = {
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        nickName: user.nickName
-      };
-      var imgurl
-      //ayth2b) only continue authenticated user/send users data if token exists
-      if (socket.handshake.query.token) {
-        //ayth2) send token back to client by changing socket headers
-
-        // since this is a callback, will send img url once completed getting img
-        getNASABackground(function(data){
-          io.emit("get back img", data)
-        })
-
-        // nasa APOD  url included
-        io.emit("get all users", socket.handshake.query.token,currentUser, allUsers);
-      }
-    }).catch((err)=>{
-      console.log(err)
+      //sends meesage to all those connected to roomOne
+      chatRoom
+        .to("room" + groupChatName)
+        .emit("receive message one", msg, groupChatName);
     });
 
-    //gzo1. on sign in, userA socket joins own room (room + userAId)
-    socket.join("room" + user._id);
-}).catch((err)=>{
-  console.log(err)
-})
+    socket.on("disconnect", function() {
+      console.log("user disconnected");
+    });
+  });
 }
+
+// function to get nasa APOD picture for background
+function disconnect(socket) {
+  console.log(socket.id + " disconnected");
+}
+
+socketAuth(io, {
+  authenticate: authenticate,
+  postAuthenticate: postAuthenticate,
+  disconnect: disconnect,
+  timeout: 100000
+});
 
 function getNASABackground(callback) {
   year = Math.floor(Math.random() * (2018 - 2000) + 2000);
@@ -663,30 +643,6 @@ function checkToken(_token, currentUserId) {
       return false;
     }
   } catch (error) {
-    console.log(error)
-    // res.status(401).json({ message: "You are not authenticated!" });
+    res.status(401).json({ message: "You are not authenticated!" });
   }
-}
-function connectAndSendChat(socket, friendId, _friend, _user, _chat) {
-  //gzo3. Server: socket on catches ... adds userB socket to (room + userAId)
-  socket.join("room" + friendId);
-  //gzo4. server sends chat info to userB
-  // note: only sending parts of the users for security
-  io.to(`${socket.client.id}`).emit(
-    "friend join single chat",
-    {
-      _id: _friend._id,
-      firstName: _friend.firstName,
-      lastName: _friend.lastName,
-      nickName: _friend.nickName
-    },
-    {
-      _id: _user._id,
-      firstName: _user.firstName,
-      lastName: _user.lastName,
-      nickName: _user.nickName
-    },
-    _chat._id,
-    _chat.messageStash
-  );
 }

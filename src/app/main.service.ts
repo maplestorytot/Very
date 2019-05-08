@@ -22,7 +22,10 @@ export class MainService{
   private backgroundIMGURL:string;
   private currentUser: CreatorType;
   private tokenTimer:any;
-  private chatOneSocket = io.connect(BACKEND_URL);
+  private token;
+  private chatOneSocket = io.connect(BACKEND_URL, {
+    query: {token: this.token}
+  });
   // if client is authenticated: to know if should display things
   private isAuthenticated = false;
   // used when opening chats will send the user id
@@ -36,12 +39,18 @@ export class MainService{
   //   return this.authStatusListener.asObservable();
   // }
 
-  constructor(private http: HttpClient, private router: Router, private responsiveService:ResponsiveService) {}
+  constructor(private http: HttpClient, private router: Router, private responsiveService:ResponsiveService) {
+    this.autoAuthUser();
+  }
   // the subject to send out the list of users to user list component
   private allOfTheUsersListener = new Subject<any>();
   private authenticatedListener = new Subject<any>();
   private currentUserListener = new Subject<any>();
   private backgroundURLListener=new Subject<string>();
+  private socketListener=new Subject<any>();
+  getSocketListener(){
+    return this.socketListener.asObservable();    
+  }
   getCurrentUserListener() {
     return this.currentUserListener.asObservable();
   }
@@ -83,14 +92,21 @@ export class MainService{
     };
 
     // use socket io auth authentication method
-    this.chatOneSocket.emit("authentication", user);
+    this.chatOneSocket.emit("authentication", user,function(token,authenticated){
+      if(!authenticated){
+        console.log("not authenticated")
+      }else if(authenticated && token){
+        console.log("Authenticated")  
+      }
+    });
     this.chatOneSocket.on('get back img',(imgdata)=>{
       this.backgroundIMGURL=imgdata.hdurl;
       this.backgroundURLListener.next(this.backgroundIMGURL);
       console.log(imgdata)
     });
     // immediately afterwards, this get method for all the users
-    this.chatOneSocket.on("get all users", (currentUser, allUsers: User[]) => {
+    this.chatOneSocket.on("get all users", (token,currentUser, allUsers: User[]) => {
+      console.log(token)
 
       // ayth2b) only continue authenticated user/send users data if token exists
         this.currentUser = currentUser;
@@ -107,7 +123,7 @@ export class MainService{
         const expirationDate = new Date(
           now.getTime() + expiresInDuration * 1000
         );
-        //this.saveAuthData(this.token, expirationDate, this.userId);
+        this.saveAuthData(token, expirationDate, this.userId);
 
 
 
@@ -120,9 +136,10 @@ export class MainService{
         this.isAuthenticated = true;
         // notifying client that is autheticated
         this.authenticatedListener.next(this.isAuthenticated);
-
+        this.socketListener.next(this.chatOneSocket);
 
     });
+
   }
   // ayth3c) logout function clear everything
 
@@ -138,24 +155,25 @@ export class MainService{
     this.authenticatedListener.next(false);
     this.allOfTheUsersListener.next(this.allOfUsers)
     this.router.navigate(["/"]);
+    this.clearAuthData();
     //this.chatOneSocket.disconnect();
   }
 
   // local storage, storing token in case of refreshing page
- /* private saveAuthData(token: string, expirationDate: Date, userId: string) {
+private saveAuthData(token: string, expirationDate: Date, userId: string) {
+  console.log(token)
     localStorage.setItem("userId", userId);
     localStorage.setItem("token", token);
     localStorage.setItem("expiration", expirationDate.toISOString());
   }
-*/
- /* // auth3d) clear local storage function
+ // auth3d) clear local storage function
   private clearAuthData() {
     // removing data from local storage
     localStorage.removeItem("token");
     localStorage.removeItem("expiration");
     localStorage.removeItem("userId");
   }
-  */
+  
   //this is a private method to return the data if need to relog the user
   //ayth3b) timer function that calls logout, asynchronous that will call after the duration time
   private setAuthTimer(duration: number) {
@@ -164,8 +182,80 @@ export class MainService{
       this.logout();
     }, duration * 1000);
   }
+  private autoAuthUser() {
+    const authInformation = this.getAuthData();
+    if (!authInformation) {
+      return;
+    }
+    const now = new Date();
+    const expiresIn = authInformation.expirationDate.getTime() - now.getTime();
+    if (expiresIn > 0) {
+      this.userId = authInformation.userId;
+      this.token = authInformation.token;
+      this.isAuthenticated = true;
+      this.setAuthTimer(expiresIn / 1000);
+      this.authenticatedListener.next(true);
+      
+      this.chatOneSocket.emit("tokenAuthentication",this.token,function(authenticated){
+        if(!authenticated){
+          this.router.navigate(["/"]);
+          console.log("Not authenticated")
+        }else if(authenticated){
+          console.log("Authenticated")  
+        }
+      });
+
+          // immediately afterwards, this get method for all the users
+    this.chatOneSocket.on("get all users", (token,currentUser, allUsers: User[]) => {
+      console.log(token)
+
+      // ayth2b) only continue authenticated user/send users data if token exists
+        this.currentUser = currentUser;
+        this.currentUserListener.next(currentUser);
+        this.userId = currentUser._id;
+        // ayth3) client stores token in local storage. sets a timer function
+        // when get token, get the expire duration
+        const expiresInDuration = 3600;
+        // log out when timeout occurs milliseconds, save it to be in
+        this.setAuthTimer(expiresInDuration);
+
+        // making a new date by adding the expires in time with the current time and then saving that data through method.
+        const now = new Date();
+        const expirationDate = new Date(
+          now.getTime() + expiresInDuration * 1000
+        );
+        // this.saveAuthData(token, expirationDate, this.userId);
 
 
+
+        // list of user logic
+        this.allOfUsers = allUsers;
+        // emit all of the users using the subject listener
+        this.allOfTheUsersListener.next([...this.allOfUsers]);
+
+        // authenticated logic
+        this.isAuthenticated = true;
+        // notifying client that is autheticated
+        this.authenticatedListener.next(this.isAuthenticated);
+        this.socketListener.next(this.chatOneSocket);
+
+    });
+    }
+  }
+  private getAuthData() {
+    const token = localStorage.getItem("token");
+    const expirationDate = localStorage.getItem("expiration");
+    // if token and exp date exist create an object to return them autoAuthUser
+    const userId = localStorage.getItem("userId");
+    if (!token || !expirationDate) {
+      return;
+    }
+    return {
+      token: token,
+      expirationDate: new Date(expirationDate),
+      userId: userId
+    };
+  }
 
 
   onCreateUser(
@@ -239,6 +329,8 @@ export class MainService{
     newMessage: MessageType,
     chatId: string
   ) {
+    console.log(this.chatOneSocket)
+
     this.chatOneSocket.emit(
       "send single message to room",
       userId,
@@ -379,7 +471,7 @@ export class MainService{
     this.chatOneSocket.on(
       "new user connected one",
       (myName: MessageType, groupNumber: number) => {
-        console.log(myName.content + groupNumber);
+        // console.log(myName.content + groupNumber);
         messagesUpdated.next({ name: myName, chatNumber: groupNumber });
       }
     );

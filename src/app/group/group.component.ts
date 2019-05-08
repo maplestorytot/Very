@@ -1,6 +1,8 @@
-import { Component } from "../../../node_modules/@angular/core";
+// import { Component } from "../../../node_modules/@angular/core";
 
 import { MainService } from "../main.service";
+import { Component } from "@angular/core";
+// import { GroupService } from "./group.service";
 
 @Component({
   selector:"group-component",
@@ -10,16 +12,16 @@ import { MainService } from "../main.service";
 
 export class GroupComponent{
 
-  constructor(public mainService:MainService){}
+  constructor( public groupService:MainService){}
   onJoinGroupA(groupNumber:number){
-    this.mainService.joinChatRoomOne(groupNumber);
+    this.groupService.joinChatRoomOne(groupNumber);
   }
   onJoinGroupB(groupNumber:number){
-    this.mainService.joinChatRoomOne(groupNumber);
+    this.groupService.joinChatRoomOne(groupNumber);
 
   }
   onJoinGroupC(groupNumber:number){
-    this.mainService.joinChatRoomOne(groupNumber);
+    this.groupService.joinChatRoomOne(groupNumber);
 
   }
 }

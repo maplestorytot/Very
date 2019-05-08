@@ -1,14 +1,14 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { NgForm } from "../../../node_modules/@angular/forms";
-import { Subscription } from "../../../node_modules/rxjs";
+import { NgForm } from "@angular/forms";
+import { Subscription } from "rxjs";
 import { MessageType } from "../message.model";
 import { ChatGroupType } from "../chatGroup.model";
 import { MainService } from "../main.service";
 import { SingleChatType } from "../singleChat.model";
-import { invalid } from "../../../node_modules/@angular/compiler/src/render3/view/util";
+import { invalid } from "@angular/compiler/src/render3/view/util";
 import { CreatorType } from "../creator.model";
 import { ResponsiveService } from "../responsive.service";
-import { Router } from "../../../node_modules/@angular/router";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-chat",

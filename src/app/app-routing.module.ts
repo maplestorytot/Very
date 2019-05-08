@@ -7,16 +7,17 @@ import { RouterModule, Routes } from "@angular/router";
 import { ChatComponent } from './chat/chat.component';
 import { LoginComponent } from './auth/login/login.component';
 import{SignupComponent} from'./auth/signup/signup.component';
-import { GroupComponent } from './group/group.component';
+// import { GroupComponent } from './group/group.component';
 import { UserListComponent } from "./auth/userList/userList.component";
 import { ProfileComponent } from "./profile/profile.component";
+import { GroupComponent } from "./group/group.component";
 
 // routes are objects of type routes that allow url to have components to be presented
 const routes: Routes = [
   // empty path is main page
   { path: "login", component: LoginComponent },
   { path: "signup", component: SignupComponent},
-  {path:"group",component:GroupComponent},
+  {path:"group",component: GroupComponent},
   // these componenets can be access through routerLink in group.component.html as an add on
  { path: "", component: ChatComponent,outlet:"chat"},
  { path: "", component: UserListComponent,outlet:"listOfUsers"},
