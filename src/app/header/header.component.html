@@ -6,9 +6,9 @@
     <ul>
       <li *ngIf="userIsAuthenticated">
         <!--Instead of sending a http request href... routerLink just rerenders the page based on the url-->
-        <a mat-button routerLink="/group" routerLinkActive="mat-accent" (click)="onGroups()">
+        <!-- <a mat-button routerLink="/group" routerLinkActive="mat-accent" (click)="onGroups()">
           Group Chats
-        </a>
+        </a> -->
       </li>
       <li *ngIf="!userIsAuthenticated">
         <!--Instead of sending a http request href... routerLink just rerenders the page based on the url-->
@@ -21,10 +21,10 @@
           Signup
         </a>
       </li>
-      <li *ngIf="userIsAuthenticated">
-        <button mat-button (click)='onLogout()'>Log out</button>
-
-
+      <li  *ngIf="userIsAuthenticated">
+        <a  mat-button routerLink="/requests" routerLinkActive="mat-accent">
+          Requests
+        </a>
       </li>
       <li  *ngIf="userIsAuthenticated">
         <button mat-button>{{currentUser.firstName}} {{currentUser.lastName}}</button>
@@ -35,5 +35,15 @@
             Friends
           </a>
       </li>
+      <li  *ngIf="userIsAuthenticated">
+        <a  mat-button routerLink="/users" routerLinkActive="mat-accent" (click)="onOpenUserList()">
+          All Users
+        </a>
+    </li>
+    <li *ngIf="userIsAuthenticated">
+      <button mat-button (click)='onLogout()'>Log out</button>
+
+
+    </li>
     </ul>
 </mat-toolbar>

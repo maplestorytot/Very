@@ -25,6 +25,8 @@ import { UserListComponent } from './auth/userList/userList.component';
 import { HeaderComponent } from './header/header.component';
 import { ProfileComponent } from './profile/profile.component';
 import { GroupComponent } from './group/group.component';
+import { FriendListComponent } from './auth/friendList/friendList.component';
+import { RequestComponent } from './requests/requests.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import { GroupComponent } from './group/group.component';
     GroupComponent,
     UserListComponent,
     HeaderComponent,
-    ProfileComponent
+    ProfileComponent,
+    FriendListComponent,
+    RequestComponent
   ],
   imports: [
     BrowserModule,

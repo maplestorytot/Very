@@ -7,10 +7,9 @@
   width:100%;
 }
 .desktopVersion{
-  width:100%;
-  /* position: fixed; */
-  /* bottom:0; */
-  /* right:0; */
+  position: fixed;
+  bottom:0;
+  right:0;
 }
 
 ul{

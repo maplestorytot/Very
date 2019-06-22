@@ -15,11 +15,11 @@ export class AppComponent implements OnInit, OnDestroy {
   isMobile=false;
   state={
     isChat:true,
-    isUserList:true,
+    isFriendList:true,
     isOther:true
   }
 
-  backgroundPicSub: Subscription;
+  // backgroundPicSub: Subscription;
   responsiveSub: Subscription;
   stateSub:Subscription;
 
@@ -28,14 +28,14 @@ export class AppComponent implements OnInit, OnDestroy {
     private responsiveService: ResponsiveService
   ) {}
   ngOnInit() {
-    this.backgroundPicSub = this.mainService
-      .getBackGroundPicListener()
-      .subscribe(url => {
-        if (this.backgroundUrl) {
-          //this.backgroundUrl=url;
-          console.log(this.backgroundUrl);
-        }
-      });
+    // this.backgroundPicSub = this.mainService
+    //   .getBackGroundPicListener()
+    //   .subscribe(url => {
+    //     if (this.backgroundUrl) {
+    //       //this.backgroundUrl=url;
+    //       console.log(this.backgroundUrl);
+    //     }
+    //   });
 
     this.responsiveSub = this.responsiveService
       .getIsMobile()

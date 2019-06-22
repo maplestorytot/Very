@@ -18,9 +18,9 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
  
 //MODELS
 const User = require("./models/user.model");
-const Group = require("./models/oldgroup.model");
+const Group = require("./models/group.model");
 //const ChatMessage=require('./models/myMessage.model');
-const SingleChat = require("./models/chat.model");
+const SingleChat = require("./models/singleChat.model");
 
 // ryanchang
 //yKoO03VrsDCfB1Ym
@@ -585,7 +585,7 @@ const postAuthenticate = function(socket,data){
   // keeping track on the current user
   User.findOne({ username: username }).then(user => {
     socket.client.user = user;
-    console.log(socket.client.user);
+
     // console.log(socket.client.user)
     // emitting a list of all the users so that client can display these users
     User.find().then(allUsers => {
@@ -602,11 +602,11 @@ const postAuthenticate = function(socket,data){
 
         // since this is a callback, will send img url once completed getting img
         getNASABackground(function(data){
-          socket.emit("get back img", data)
+          io.emit("get back img", data)
         })
 
         // nasa APOD  url included
-        socket.emit("get all users", socket.handshake.query.token,currentUser, allUsers);
+        io.emit("get all users", socket.handshake.query.token,currentUser, allUsers);
       }
     }).catch((err)=>{
       console.log(err)
@@ -644,7 +644,7 @@ function getNASABackground(callback) {
       }
     }
   );
-    
+
 
 }
 
@@ -690,8 +690,3 @@ function connectAndSendChat(socket, friendId, _friend, _user, _chat) {
     _chat.messageStash
   );
 }
-
-
-
-
-

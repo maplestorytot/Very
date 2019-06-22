@@ -5,9 +5,12 @@
   <div [hidden]="!state.isOther">
       <router-outlet ></router-outlet>
   </div>
-  <div [hidden]="!state.isUserList">
+  <!-- <div [hidden]="!state.isUserList">
       <router-outlet name="listOfUsers" ></router-outlet>
-  </div>
+  </div> -->
+  <div [hidden]="!state.isFriendList">
+    <router-outlet name="friendList" ></router-outlet>
+</div>
   <div [hidden]="!state.isChat">
       <router-outlet name="chat" ></router-outlet>
   </div>

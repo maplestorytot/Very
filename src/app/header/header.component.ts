@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription, Subject } from "../../../node_modules/rxjs";
 import { MainService } from "../main.service";
-import { CreatorType } from "../creator.model";
+import { UserType } from "../models/user.model";
 import { ResponsiveService } from "../responsive.service";
 
 @Component({
@@ -16,7 +16,7 @@ export class HeaderComponent implements OnInit, OnDestroy{
   private authListenerSubs:Subscription;
   private currentUserSub:Subscription;
 
-  currentUser:CreatorType;
+  currentUser:UserType;
   constructor(private mainService:MainService, private responsiveService:ResponsiveService){}
 
   ngOnInit(){
@@ -27,6 +27,7 @@ export class HeaderComponent implements OnInit, OnDestroy{
       this.userIsAuthenticated=isAuthenticated;
     });
     this.currentUserSub=this.mainService.getCurrentUserListener().subscribe(currentUser=>{
+      console.log(currentUser);
       this.currentUser=currentUser;
     });
 
@@ -60,9 +61,16 @@ export class HeaderComponent implements OnInit, OnDestroy{
   }
   onOpenFriends(){
     if(this.responsiveService.getCheckIsMobile()){
-      this.responsiveService.onChangeState("userList");
+      this.responsiveService.onChangeState("friendList");
       // emptying opened chats
       this.mainService.deleteAllChats();
+    }
+  }
+  onOpenUserList(){
+    if(this.responsiveService.getCheckIsMobile()){
+      this.responsiveService.onChangeState("other");
+      // emptying opened chats
+    
     }
   }
 

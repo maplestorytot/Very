@@ -1,34 +1,31 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Subscription } from "../../../../node_modules/rxjs";
-import { NgForm } from "../../../../node_modules/@angular/forms";
+import { Subscription } from "rxjs";
+import { NgForm } from "@angular/forms";
 import { MainService } from "../../main.service";
 import { UserType } from "../../models/user.model";
 import { ResponsiveService } from "../../responsive.service";
-import { Router } from "../../../../node_modules/@angular/router";
+import { Router } from "@angular/router";
 
 @Component({
-  templateUrl: "./userList.component.html",
-  styleUrls: ["./userList.component.css"]
+  templateUrl: "./friendList.component.html",
+  styleUrls: ["./friendList.component.css"]
 })
-export class UserListComponent implements OnInit, OnDestroy {
-  constructor(public mainService: MainService,private responsiveService:ResponsiveService, private router: Router) {
-  }
+export class FriendListComponent implements OnInit, OnDestroy {
+  constructor(public mainService: MainService,private responsiveService:ResponsiveService, private router: Router) {}
   // subscription to mainservice's getAllOfTheUsersListener
   private allOfUsersSub: Subscription;
   private resizeSub:Subscription;
-  allUserList;
+  allUserList//: UserType[];
   currentVideoCalls=[];
   isMobile:boolean;
   ngOnInit() {
     // update the existing user list to display
-    // this.allOfUsersSub = this.mainService
-    //   .getAllOfTheUsersListener()
-    //   .subscribe(allUser => {
-    //     console.log('got all users')
-    //     this.allUserList = allUser;
-    //   });
-    this.allUserList=this.mainService.getAllUser();
-    console.log(this.allUserList)
+    this.allOfUsersSub = this.mainService
+      .getFriendsListener()
+      .subscribe(allUser => {
+        this.allUserList = allUser;
+      });
+
     this.resizeSub=this.responsiveService.getIsMobile().subscribe(isMobile=>{
       this.isMobile=isMobile;
     });
@@ -53,11 +50,11 @@ export class UserListComponent implements OnInit, OnDestroy {
       this.responsiveService.onChangeState("other");
     }
   }
-  onAddFriend(friendId:string){
-    this.mainService.addFriend(friendId);
-  }
+  // onAddFriend(friendId:string){
+  //   this.mainService.addFriend(friendId);
+  // }
   ngOnDestroy() {
-    // this.allOfUsersSub.unsubscribe();
+    this.allOfUsersSub.unsubscribe();
 
   }
 }

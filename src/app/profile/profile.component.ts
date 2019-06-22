@@ -1,8 +1,9 @@
 
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { MainService } from "../main.service";
-import { CreatorType } from "../creator.model";
+import { UserType } from "../models/user.model";
 import { ActivatedRoute, ParamMap, Router } from "../../../node_modules/@angular/router";
+import { Subscription } from "rxjs";
 
 
 @Component({
@@ -10,12 +11,14 @@ import { ActivatedRoute, ParamMap, Router } from "../../../node_modules/@angular
   styleUrls: ["./profile.component.css"]
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  profileUser:CreatorType;
-
+  profileUser:UserType;
+  allOfUsersSub:Subscription;
   constructor(public mainService: MainService,  public route: ActivatedRoute, private router: Router) {
 
   }
   ngOnInit(){
+ 
+  
     // psts1c) note: this is done through parammap which takes the parameter userId348043
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       // if has a url paramaters/parammap has a postid then in edit mode

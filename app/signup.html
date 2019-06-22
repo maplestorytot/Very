@@ -1,0 +1,63 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+        <form id="signup">
+            <input type="text" name="username" placeholder="username">
+            <input type="password" name="password" placeholder="password">
+            <input type="text" name="firstName" placeholder="first name">
+            <input type="text" name="lastName" placeholder="last name"> 
+            <button></button>
+        </form>
+        <script>
+            const form =document.querySelector("#signup");
+
+            form.addEventListener('submit',(e)=>{
+                const user= {
+                username:e.target.elements.username.value,
+                password:e.target.elements.password.value,
+                firstName:e.target.elements.firstName.value,
+                lastName:e.target.elements.lastName.value
+                }
+                console.log(user);
+                e.preventDefault();
+
+
+                const response = fetch(`http://localhost:3000/api/user/signup`,{
+                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                    mode: 'cors', // no-cors, cors, *same-origin
+                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                    credentials: 'same-origin', // include, *same-origin, omit
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrer: 'no-referrer', // no-referrer, *client
+                    body: JSON.stringify(user), // body data type must match "Content-Type" header
+                }).then((res)=>{
+                    if(response.status===200){
+                   console.log('success');
+                }
+                }).catch((err)=>{
+                    console.log(err)
+                })
+               
+
+                // const request = new XMLHttpRequest()
+                // request.addEventListener('readystatechange',(event)=>{
+                //     if(event.target.readyState===4&&event.target.status===200){
+                //         console.log('success')
+                //     }else if(event.target.readyState===4&&event.target.status===400){
+                //     }
+                // })
+                // request.open('POST', `http://localhost:3000/api/user/signup`,true) //type of request
+                // request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                // request.send(user) // send request
+            })
+
+        </script>
+    </body>
+</html>
