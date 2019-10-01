@@ -9,7 +9,7 @@ import { ResponsiveService } from "./responsive.service";
   styleUrls: ["./app.component.css"]
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = "Veery";
+  title = "UofT Mental Health Chat";
   backgroundUrl = null; //"https://66.media.tumblr.com/247552e99214b35e9a337664239a2170/tumblr_n8pzxuF5XJ1s5qng0o9_1280.png";
 
   isMobile=false;

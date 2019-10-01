@@ -105,6 +105,8 @@ button {
 textarea {
   width: 75%;
   border: 0;
+  background-color: pink;
+    border: 0;
   border-right: solid;
 }
 
