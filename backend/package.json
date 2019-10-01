@@ -10,8 +10,6 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.4.0",
-    "googleapis": "^39.2.0",
-    "query-string": "^6.5.0",
     "mongoose": "^5.2.12",
     "request": "^2.88.0",
     "rxjs": "^6.0.0",

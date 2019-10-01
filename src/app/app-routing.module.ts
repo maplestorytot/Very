@@ -11,8 +11,6 @@ import{SignupComponent} from'./auth/signup/signup.component';
 import { UserListComponent } from "./auth/userList/userList.component";
 import { ProfileComponent } from "./profile/profile.component";
 import { GroupComponent } from "./group/group.component";
-import { FriendListComponent } from "./auth/friendList/friendList.component";
-import { RequestComponent } from "./requests/requests.component";
 
 // routes are objects of type routes that allow url to have components to be presented
 const routes: Routes = [
@@ -22,9 +20,7 @@ const routes: Routes = [
   {path:"group",component: GroupComponent},
   // these componenets can be access through routerLink in group.component.html as an add on
  { path: "", component: ChatComponent,outlet:"chat"},
- { path: "", component: FriendListComponent,outlet:"friendList"},
- { path: "users", component: UserListComponent},
- { path: "requests", component: RequestComponent},
+ { path: "", component: UserListComponent,outlet:"listOfUsers"},
  { path: "profile/:userId", component: ProfileComponent}
  ];
 //  { path: "", component: LoginComponent },

@@ -28,10 +28,8 @@
     "body-parser": "^1.18.3",
     "core-js": "^2.5.4",
     "express": "^4.16.3",
-    "googleapis": "^39.2.0",
     "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.2.12",
-    "query-string": "^6.5.0",
     "request": "^2.88.0",
     "rxjs": "^6.0.0",
     "sendgrid": "^5.2.3",
@@ -40,7 +38,7 @@
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.800.3",
+    "@angular-devkit/build-angular": "^0.13.8",
     "@angular/cli": "~6.1.5",
     "@angular/compiler-cli": "^6.1.0",
     "@angular/language-service": "^6.1.0",

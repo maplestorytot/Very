@@ -24,14 +24,9 @@ export class SignupComponent /*implements OnInit, OnDestroy */{
       this.mainService.onCreateUser(
         form.value.firstName,
         form.value.lastName,
+        form.value.nickname,
         form.value.username,
-        form.value.password,
-        [],
-        -1,
-        '',
-        '',
-        [],
-        []
+        form.value.password
       );
     }
   }

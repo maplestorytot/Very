@@ -1,19 +1,19 @@
 <!--Desktop Single Chat-->
 
 <div id="main">
-  <div  [ngClass]="{'mobileChaters':isMobile,'desktopChaters':!isMobile}"  *ngFor="let chats of chats">
+  <div  [ngClass]="{'mobileChaters':isMobile,'desktopChaters':!isMobile}"  *ngFor="let singleChat of singleChat">
     <div  [ngClass]="{'mobileChatButtons':isMobile,'desktopChatButtons':!isMobile}">
       <!--
         <p *ngIf='putInUser==true&& chats.joined===true'>{{chats.groupNumber}}</p>
       -->
       <button mat-button color="primary" id="friendName">
-        {{ chats.users[0].firstName }} {{ chats.users[1].firstName }}
+        {{ singleChat.friendObj.firstName }} {{ singleChat.friendObj.lastName }}
       </button>
       <button
         id="clearButton"
         color="warn"
         mat-raised-button
-        (click)="clearChats(chats)"
+        (click)="clearChats(singleChat)"
       >
         X
       </button>
@@ -22,14 +22,14 @@
     <div [ngClass]="{'mobileSecondary':isMobile,'desktopSecondary':!isMobile}">
       <form
         *ngIf="userIsAuthenticated == true"
-        (submit)="onSendSingleMessage(singleForm, chats)"
+        (submit)="onSendSingleMessage(singleForm, singleChat)"
         #singleForm="ngForm"
       >
         <div  [ngClass]="{'mobileScrollerWrapper':isMobile,'desktopScrollerWrapper':!isMobile}"
           #scrollMe
           [scrollTop]="scrollMe.scrollHeight"
         >
-          <ul *ngFor="let messages of chats.messageStash">
+          <ul *ngFor="let messages of singleChat.messages">
             <li
               class="userCard"
               *ngIf="messages.creator.firstName == currentUser.firstName"
@@ -65,7 +65,7 @@
             ngModel
             #textIn="ngModel"
             required
-            (keyup.enter)="onSendSingleMessage(singleForm, chats)"
+            (keyup.enter)="onSendSingleMessage(singleForm, singleChat)"
           ></textarea>
 
           <button id="submit" mat-button type="submit">submit</button>
@@ -79,7 +79,7 @@
 
 
 
-<!-- 
+
 <br />
 <form
   *ngIf="putInUser == false"
@@ -140,7 +140,7 @@
       </div>
     </form>
   </div>
-</div> -->
+</div>
 
 
 <!--Mobile Single Chat-->

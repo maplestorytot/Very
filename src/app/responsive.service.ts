@@ -10,9 +10,8 @@ export class ResponsiveService {
   private state=new Subject<any>();
   private theState={
     isChat:false,
-    // isUserList:false,
-    isOther:false,
-    isFriendList:false
+    isUserList:false,
+    isOther:false
   }
   public screenWidth: string;
 
@@ -22,29 +21,21 @@ export class ResponsiveService {
 
   onChangeState(state:string){
     if(state==="desktopMode"){
-      // this.theState.isUserList=false;
+      this.theState.isUserList=true;
       this.theState.isOther=true;
       this.theState.isChat=true;
-      this.theState.isFriendList=true;
-      console.log(this.theState);
     } else if(state==="chat"){
-      // this.theState.isUserList=false;
+      this.theState.isUserList=false;
       this.theState.isOther=false;
       this.theState.isChat=true;
-      this.theState.isFriendList=false;
-
     }else if(state==="other"){
-      // this.theState.isUserList=false;
+      this.theState.isUserList=false;
       this.theState.isOther=true;
       this.theState.isChat=false;
-      this.theState.isFriendList=false;
-
-    }else if(state==="friendList"){
-      // this.theState.isUserList=true;
+    }else if(state==="userList"){
+      this.theState.isUserList=true;
       this.theState.isOther=false;
       this.theState.isChat=false;
-      this.theState.isFriendList=true;
-
     }
     this.state.next(this.theState);
   }
