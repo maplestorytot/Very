@@ -24,7 +24,7 @@ const SingleChat = require("./models/singleChat.model");
 
 // ryanchang
 //yKoO03VrsDCfB1Ym
-mongoose
+/* mongoose
   .connect(
     "mongodb+srv://ryanchang:"+process.env.MONGO_ATLAS_PW+"@mercy-ot4et.mongodb.net/test?retryWrites=true"
   )
@@ -33,7 +33,19 @@ mongoose
   })
   .catch(() => {
     console.log("connection failed");
-  });
+  }); */
+  // const dbPort = process.env.DB_PORT || 27017;
+
+// Current AWS URL
+const dbURL = 'mongodb://localhost:' + 27017 + '/very';
+// Connect to Database
+mongoose.connect(dbURL);
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+    // we're connected!
+    console.log('Connect to DB successfully');
+});
 
 //when recieving a port through environment variable or setting up portchecking if the port is valid
 const normalizePort = val => {
@@ -169,6 +181,7 @@ app.use(
                 console.log("new user created: " + user);
               })
               .catch(err => {
+                console.log(err)
                 res
                   .status(500)
                   .json({ message: "Invalid Authentification credentials!" });
