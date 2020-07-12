@@ -5,15 +5,18 @@ This project is comprised of MongoDB, Express.js, AngularJS, and Node.js (MEAN s
 
 ## Development server
 To run the app:
-0) Clone the repo. 
-1) git checkout workingVersion
-2) Open a terminal and run `npm install`. This installs the dependencies for the project.
 
-3) Open a terminal and run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
+1) Clone the repo. 
 
-4) Open another terminal and run nodemon ./backend/server.js. 
+2) git checkout workingVersion
 
-5) Afterwards, you may create an account, login, and begin chatting with others users. You can do this by opening two tabs at `http://localhost:4200/`and login into two accounts. 
+3) Open a terminal and run `npm install`. This installs the dependencies for the project.
+
+4) Open a terminal and run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
+
+5) Open another terminal and run nodemon ./backend/server.js. 
+
+6) Afterwards, you may create an account, login, and begin chatting with others users. You can do this by opening two tabs at `http://localhost:4200/`and login into two accounts. 
 
 ## Features
 Finished:
