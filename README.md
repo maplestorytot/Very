@@ -2,7 +2,15 @@
 A chat app that makes use of socket.io for real time messaging. 
 This project is comprised of MongoDB, Express.js, AngularJS, and Node.js (MEAN stack). 
 
-
+## Screenshots
+<img src="/Very-screenshots/Mobile-Home-Screen.PNG" alt="Mobile Home Screen"
+	title="Mobile Home Screen" width="500px" height="500px"/>
+<img src="/Very-screenshots/Mobile-Profile.PNG" alt="Mobile Profile"
+	title="Mobile Profile" width="500px" height="500px"/>
+  <img src="/Very-screenshots/Mobile-Chatting.PNG" alt="Mobile Chatting"
+	title="Mobile Chatting" width="500px" height="500px"/>
+    <img src="/Very-screenshots/Chatting.PNG" alt="Chatting"
+	title="Chatting" />
 ## Development server
 To run the app:
 
@@ -32,5 +40,4 @@ To do:
 Note: 
 In the workingVersion branch, after sign up, you must refresh the page to login.
 
-## Screenshots
-![Mobile Chatting](https://github.com/maplestorytot/Very/blob/master/Very-screenshots/Mobile-Chatting.PNG?raw=true)
+
